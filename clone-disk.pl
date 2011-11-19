@@ -32,6 +32,7 @@ my $xpath = {  # {{{
 }; # }}}
 
 GetOptions($opts,"domain=s","name=s") or pod2usage();
+pod2usage(-verbose=>1, -msg=>"Error: domain and name required\n") unless length($opts->{domain}) && length($opts->{name});
 
 # get the domain XML so we can find its virtual disk
 open(my $domain_xml_fh,"-|",qw(virsh dumpxml),$opts->{domain}) or die "Couldn't run virsh dumpxml $opts->{domain} ($!)";
@@ -60,3 +61,25 @@ system(qw(virsh vol-create-as ram),@$opts{qw(name size)},qw(--format qcow2 --bac
 # delete a volume
 # vol-delete VOLUME POOL
 # virsh vol-delete malware-clone ram
+
+=head1 NAME clone-disk.pl
+
+=head2 SYNOPSIS
+
+Create a qemu snapshot disk image.
+
+=head1 OPTIONS
+
+=over 4
+
+=item domain
+
+The domain to create the snapshot disk image based on
+
+=item name
+
+The name of the new snapshot disk image.
+
+=back
+
+=end
