@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 # vim: foldmethod=marker sw=2 commentstring=\ #\ %s
+
 use strict;
 use warnings;
 use Getopt::Long;
@@ -33,7 +34,9 @@ my $opts = {};
 
 # xpath filters
 my $xpath = {  # {{{
-  disk => '/domain/devices/disk[@device="disk" and target/@dev="vda"]',
+  # XXX FIXME RGH: locate DISK node
+  disk => '/domain/devices/disk[@device="disk" and @type="block" and ends-with(target/@dev,"da")]',
+  file => '/domain/devices/disk[@device="disk" and @type="file" and  ends-with(target/@dev,"da")]',
 }; # }}}
 
 GetOptions($opts,"domain=s","clone=s",'cowpool=s') or pod2usage();
@@ -42,6 +45,7 @@ pod2usage (-verbose=>1,-msg=>"Error: domain and clone are required") unless leng
 # get source domain for cloning # {{{
 my $source_domain;
 eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
+# XXX RGH FIXME: There have to be more error cases than "Domain not found" ...
 if ($@ =~ m/Domain not found/) {
   my $err = $@;
   $err =~ s/[\r\n]$//g;
@@ -75,14 +79,15 @@ my $cow_vol = create_cow_vol(
 
 update_disk_image($domain_doc, $cow_vol);
 
-# remove the UUID
+# remove the UUID to have libvirt autogen it
 my ($uuid) = $domain_doc->findnodes('/domain/uuid');
 $uuid->unbindNode();
 
-my ($mac) = $domain_doc->findnodes('/domain/devices/interface[./@type="network" and ./source/@network="private"]/mac');
+# remove MAC node to have libvirt autogen it
+my ($mac) = $domain_doc->findnodes('/domain/devices/interface[./@type="network"]/mac');
 $mac->unbindNode();
 
-# define the domain (make it persistent)
+# define the domain
 my $new_domain;
 print STDERR $domain_doc->toString(1);
 eval { $new_domain = $vmm->create_domain($domain_doc->toString(),Sys::Virt::Domain::START_PAUSED); };
@@ -91,11 +96,13 @@ if ($@) {
   die "Couldn't create domain! ($err)";
 }
 
+# helper subroutines
 sub create_cow_vol { # {{{
   my $args;
   %{$args} = @_;
 
   # get the source disk node path
+  # XXX FIXME RGH: locate DISK node
   my ($source_disk) = $args->{domain_doc}->findvalue('/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@dev'
   .
   '|'
@@ -155,10 +162,11 @@ sub update_disk_image { # {{{
   use Data::Dumper; print Data::Dumper->Dump([$vol_info],[qw($vol_info)]);
 
   # grab the disk node
+  # XXX FIXME RGH: locate DISK node
   my ($disk_node) = $xml->findnodes('/domain/devices/disk[@device="disk" and target/@dev="vda"]');
 
   # modify the <disk> type attribute
-  my $old_type = $disk_node->findnodes('./@type');
+  my ($old_type) = $disk_node->findnodes('./@type');
   my $new_type;
 
   # figure out what type the COW volume is
@@ -190,7 +198,8 @@ sub update_disk_image { # {{{
   my $driver_name_attr=$xml->createAttribute("name","qemu");
   my $driver_type_attr=$xml->createAttribute("type","qcow2");
   # this makes snapshots take 5 seconds instead of 5 minutes.
-  my $driver_cache_attr=$xml->createAttribute("cache","writeback");
+  # XXX RGH FIXME: try cache = none?
+  my $driver_cache_attr=$xml->createAttribute("cache","writethrough");
 
   # assemble the driver element + attributes
   map { $driver->addChild($_) } $driver_name_attr,$driver_type_attr,$driver_cache_attr;
