@@ -5,6 +5,7 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use XML::LibXML;
+use Sys::Virt;
 
 my $parser = XML::LibXML->new( # {{{
     {
@@ -25,6 +26,9 @@ my $parser = XML::LibXML->new( # {{{
 # options defaults
 my $opts = {};
 
+my $uri = $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
+my $vmm = Sys::Virt->new(uri=>$uri) or die "Couldn't connect to libvirt ($!)";
+
 # xpath filters
 my $xpath = {  # {{{
   backing => 'string(/domain/devices/disk[@device="disk"]/source/@dev|/domain/devices/disk[@device="disk"]/source/@file)',
@@ -34,16 +38,23 @@ my $xpath = {  # {{{
 GetOptions($opts,"domain=s","name=s") or pod2usage();
 pod2usage(-verbose=>1, -msg=>"Error: domain and name required\n") unless length($opts->{domain}) && length($opts->{name});
 
-# get the domain XML so we can find its virtual disk
-open(my $domain_xml_fh,"-|",qw(virsh dumpxml),$opts->{domain}) or die "Couldn't run virsh dumpxml $opts->{domain} ($!)";
+# get source domain;
+my $source_domain_obj;
+eval { $source_domain_obj = $vmm->get_domain_by_name($opts->{domain}) };
+if ($@ =~ m/omain not found/) {
+  my $err = $@; $err =~ s/[\r\n]*$//g; # remove newline
+  die "Couldn't get domain $opts->{domain}! ($err)";
+}
+
+die "Refusing to clone an active VM" if $source_domain_obj->is_active();
+my $domain_xml_str = $source_domain_obj->get_xml_description();
+
 # load the XML into the parser
-my $domain_doc = $parser->load_xml( IO => $domain_xml_fh );
-close $domain_xml_fh;
+my $domain_doc = $parser->load_xml( string => $domain_xml_str );
 
 ($opts->{backing}) = $domain_doc->findvalue($xpath->{backing});
 
 print "Backing is $opts->{backing}\n";
-
 
 # get the domain XML so we can find its virtual disk
 open(my $vol_xml_fh,"-|",qw(virsh vol-dumpxml),$opts->{backing}) or die "Couldn't run virsh vol-dumpxml $opts->{backing} ($!)";
