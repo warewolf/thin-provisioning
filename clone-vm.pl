@@ -117,7 +117,7 @@ sub create_cow_vol { # {{{
 
   if ($@) {
     my $err = $@; $err =~ s/[\r\n]*$//;
-    die "create_cow: Couldn't get backing storage volme! ($err)";
+    die "create_cow: Couldn't get backing storage volume for $source_disk! ($err)";
   } # }}}
 
   my $info = $backing_vol->get_info() ;
