@@ -43,10 +43,14 @@ my $xpath = {  # {{{
   file => '/domain/devices/disk[@device="disk" and @type="file" and  ends-with(target/@dev,"da")]',
 }; # }}}
 
-GetOptions($opts,"domain=s",'files=s@{,}','zip=s') or pod2usage();
+GetOptions($opts,"imagefile=s","domain=s",'files=s@{,}','zip=s') or pod2usage();
 print Data::Dumper->Dump([$opts],[qw($opts)]);
-pod2usage (-verbose=>1,-msg=>"Error: domain and clone are required") unless length $opts->{domain} && scalar @{$opts->{files}};
+pod2usage (-verbose=>1,-msg=>"Error: domain or imagefile required") unless (defined($opts->{domain}) or defined($opts->{imagefile}));
+pod2usage (-verbose=>1,-msg=>"Error: can't use both domain and imagefile") if (defined($opts->{domain}) && defined($opts->{imagefile}));
+pod2usage (-verbose=>1,-msg=>"Error: domain/imagefile and files to extract required") unless scalar @{$opts->{files}};
 
+my $source_disk;
+if ($opts->{domain}) {
 # get source domain # {{{
 my $source_domain;
 eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
@@ -64,11 +68,16 @@ die "Refusing to mess with an active VM" if $source_domain->is_active();
 my $domain_doc = $parser->load_xml( string => $domain_xml ) or die "Couldn't load XML ($!)";
 die "Failed to load XML" unless ref $domain_doc;
 
-my ($source_disk) = $domain_doc->findvalue(
+($source_disk) = $domain_doc->findvalue(
   '/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@dev'.
   '|'.
   '/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@file'
 );
+} elsif ($opts->{imagefile}) {
+  $source_disk = $opts->{imagefile};
+} else {
+  pod2usage (-verbose=>1,-msg=>"Error: wtf?");
+}
 
 print Data::Dumper->Dump([$source_disk],[qw($source_disk)]);
 
