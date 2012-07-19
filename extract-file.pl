@@ -44,13 +44,12 @@ my $xpath = {  # {{{
 }; # }}}
 
 GetOptions($opts,"imagefile=s","domain=s",'files=s@{,}','zip=s') or pod2usage();
-print Data::Dumper->Dump([$opts],[qw($opts)]);
 pod2usage (-verbose=>1,-msg=>"Error: domain or imagefile required") unless (defined($opts->{domain}) or defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: can't use both domain and imagefile") if (defined($opts->{domain}) && defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: domain/imagefile and files to extract required") unless scalar @{$opts->{files}};
 
 my $source_disk;
-if ($opts->{domain}) {
+if ($opts->{domain}) { # {{{
 # get source domain # {{{
 my $source_domain;
 eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
@@ -73,13 +72,12 @@ die "Failed to load XML" unless ref $domain_doc;
   '|'.
   '/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@file'
 );
-} elsif ($opts->{imagefile}) {
+} # }}}
+elsif ($opts->{imagefile}) {
   $source_disk = $opts->{imagefile};
 } else {
   pod2usage (-verbose=>1,-msg=>"Error: wtf?");
 }
-
-print Data::Dumper->Dump([$source_disk],[qw($source_disk)]);
 
 my $guest = new Sys::Guestfs();
 $guest->add_drive_opts ($source_disk, readonly => 1);
@@ -138,7 +136,7 @@ for my $root (@roots) { # {{{
     $guest->umount_all ()
 } # }}}
 
-sub download_file {
+sub download_file { # {{{
   my ($zip,$file,$tempdir) = @_;
 
   my $tempfile_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
@@ -154,6 +152,7 @@ sub download_file {
 
   # queue for adding to zip
   my $member;
+  $file =~ s/^\///;
   $member = $zip->addFile($tempfile_name,$file);
   $member->desiredCompressionMethod( COMPRESSION_DEFLATED );
-}
+} # }}}
