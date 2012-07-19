@@ -109,22 +109,27 @@ for my $root (@roots) { # {{{
     map { $_ = $guest->case_sensitive_path($_) } @{$opts->{files}};
 
     foreach my $file (@{$opts->{files}}) { # {{{
-      # temporary storage of untrusted file-path-names from guest
-      my $tempfile_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
+      warn "$file does not exist" unless $guest->exists($file);
 
-      # these objects go out of scope before the zipfile is written to disk,
-      # which would cause them to be deleted too early. Let the tempdir
-      # CLEANUP take care of them instead.
-      $tempfile_fh->unlink_on_destroy(0);
-
-      my $tempfile_name = $tempfile_fh->filename;
-      print "Downloading: $file to $tempfile_name\n";
-      $guest->download ($file, $tempfile_name);
-
-      # queue for adding to zip
-      my $member;
-      $member = $zip->addFile($tempfile_name,$file);
-      $member->desiredCompressionMethod( COMPRESSION_DEFLATED );
+      if ($guest->is_file($file)) {
+        download_file($zip,$file,$tempdir);
+      } elsif ($guest->is_dir($file)) {
+        my $dir = $file;
+        # recursivly acquire files from a directory
+        my $find0_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
+        my $find0_name = $find0_fh->filename;
+        $guest->find0($dir,$find0_name);
+        # go to the beginning of the file
+        $find0_fh->seek(0,0);
+	  {
+	    local $/="\x00";
+	    foreach my $file (<$find0_fh>) {
+              chomp $file;
+	      download_file($zip,"$dir$file",$tempdir) if $guest->is_file("$dir$file");
+	    }
+	  }
+        $find0_fh->close();
+      }
     } # }}}
 
     unless ($zip->writeToFileNamed($opts->{zip}) == AZ_OK) {
@@ -132,3 +137,23 @@ for my $root (@roots) { # {{{
     }
     $guest->umount_all ()
 } # }}}
+
+sub download_file {
+  my ($zip,$file,$tempdir) = @_;
+
+  my $tempfile_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
+
+  # these objects go out of scope before the zipfile is written to disk,
+  # which would cause them to be deleted too early. Let the tempdir
+  # CLEANUP take care of them instead.
+  $tempfile_fh->unlink_on_destroy(0);
+
+  my $tempfile_name = $tempfile_fh->filename;
+  print "Downloading: $file to $tempfile_name\n";
+  $guest->download ($file, $tempfile_name);
+
+  # queue for adding to zip
+  my $member;
+  $member = $zip->addFile($tempfile_name,$file);
+  $member->desiredCompressionMethod( COMPRESSION_DEFLATED );
+}
