@@ -47,6 +47,7 @@ GetOptions($opts,"imagefile=s","domain=s",'files=s@{,}','zip=s') or pod2usage();
 pod2usage (-verbose=>1,-msg=>"Error: domain or imagefile required") unless (defined($opts->{domain}) or defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: can't use both domain and imagefile") if (defined($opts->{domain}) && defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: domain/imagefile and files to extract required") unless scalar @{$opts->{files}};
+pod2usage (-verbose=>1,-msg=>"Error: destination zip file required") unless defined($opts->{zip});
 
 my $source_disk;
 if ($opts->{domain}) { # {{{
