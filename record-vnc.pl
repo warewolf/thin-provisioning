@@ -8,6 +8,7 @@ use Pod::Usage;
 use XML::LibXML;
 #use Carp::Always;
 use Sys::Virt;
+use File::Temp qw( tempfile tempdir);
 
 my $parser = XML::LibXML->new( # {{{
     {
@@ -33,7 +34,7 @@ my $vmm = Sys::Virt->new(uri=>$uri);
 my $opts = {};
 
 GetOptions($opts,"domain=s","fbs=s","port=i") or pod2usage();
-#pod2usage (-verbose=>1,-msg=>"Error: domain and clone are required") unless length $opts->{domain} && length $opts->{clone};
+pod2usage (-verbose=>1,-msg=>"Error: --domain [domainname] --fbs [fbs_prefox] --port [number] and are required") unless (length $opts->{domain} && length $opts->{fbs} && length $opts->{port});
 
 # get source domain for cloning # {{{
 my $source_domain;
@@ -45,18 +46,41 @@ if ($@ =~ m/Domain not found/) {
   die "Couldn't get domain $opts->{domain}! ($err)";
 } # }}}
 
-my $domain_xml = $source_domain->get_xml_description();
+my $domain_xml = $source_domain->get_xml_description(Sys::Virt::Domain::XML_SECURE);
 die "Can't record an inactive VM" unless $source_domain->is_active();
 
 # load the XML into the parser
 my $domain_doc = $parser->load_xml( string => $domain_xml ) or die "Couldn't load XML ($!)";
 die "Failed to load XML" unless ref $domain_doc;
 
-my $xpath = '/domain/devices/graphics[@type="vnc"]/@port';
+my $vnc_port_xpath = '/domain/devices/graphics[@type="vnc"]/@port';
+my $vnc_password_xpath = '/domain/devices/graphics[@type="vnc"]/@passwd';
 
-my $vnc_port = $domain_doc->findvalue($xpath);
+my $vnc_port = $domain_doc->findvalue($vnc_port_xpath);
+my $vnc_password = $domain_doc->findvalue($vnc_password_xpath);
 
 print "VNC port $vnc_port\n";
+print "VNC password $vnc_password\n";
+
+# we need to create the host info file
+# and the password file
+my $tempdir = File::Temp->newdir( CLEANUP => 1 );
+
+my $hostinfo_file_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
+my $passwd_file_fh   = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
+
+my @args = qw(vncreflector -t -q);
+
+printf $hostinfo_file "0.0.0.0:%d %s",$vnc_port-5900,$vnc_password;
+
+# hostinfo format:
+# hostname:vncdisplay_Number password
+# 
+# format of password file
+# full_control
+# view_only
+
+
 =head1 NAME
 
 clone-vm.pl
