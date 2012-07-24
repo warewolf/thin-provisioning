@@ -90,7 +90,7 @@ $mac->unbindNode();
 # define the domain
 my $new_domain;
 print STDERR $domain_doc->toString(1);
-eval { $new_domain = $vmm->create_domain($domain_doc->toString(),Sys::Virt::Domain::START_PAUSED); };
+eval { $new_domain = $vmm->define_domain($domain_doc->toString());
 if ($@) {
   my $err = $@; $err =~ s/[\r\n]*$//;
   die "Couldn't create domain! ($err)";
