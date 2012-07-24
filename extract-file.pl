@@ -43,11 +43,55 @@ my $xpath = {  # {{{
   file => '/domain/devices/disk[@device="disk" and @type="file" and  ends-with(target/@dev,"da")]',
 }; # }}}
 
-GetOptions($opts,"imagefile=s","domain=s",'files=s@{,}','zip=s') or pod2usage();
+GetOptions($opts,"imagefile=s","domain=s",'files=s@{,}','zip=s','help','man') or pod2usage();
 pod2usage (-verbose=>1,-msg=>"Error: domain or imagefile required") unless (defined($opts->{domain}) or defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: can't use both domain and imagefile") if (defined($opts->{domain}) && defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: domain/imagefile and files to extract required") unless scalar @{$opts->{files}};
 pod2usage (-verbose=>1,-msg=>"Error: destination zip file required") unless defined($opts->{zip});
+
+pod2usage(1) if $opts->{help};
+pod2usage(-verbose => 2) if $opts->{man};
+
+
+=pod
+
+=head1 NAME
+
+extract-file.pl - extract one or more files from a virtual machine and place them into a zip file.
+
+=head1 STNOPSIS
+
+extract-file.pl --domain malware --files /malware/ --files /windows/system32/drivers/config --zip analysis.zip
+
+extract-file.pl --imagefile malware.qcow2 --files /malware/ --files /windows/system32/drivers/config --zip analysis.zip
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<-imagefile>
+
+A virtual machine disk image file to be read from.  Can be a file (e.g. a qcow file) or a block device -- it will be opened read-only.
+
+=item B<--domain>
+
+A libvirt virtual machine domain name, to locate its first disk image to be opened read-only.
+
+=item B<--files> [list] [of] [files or directories]
+
+A list of paths or files to be extracted from the image.  If a directory is specified, it will be recursivly extracted with no depth limit, so don't try to acquire B</>!
+
+=item B<--zip> [zipfile]
+
+A zip file to write the extracted files to.
+
+=item B<--help>
+
+Display help
+
+=back
+
+=cut
 
 my $source_disk;
 if ($opts->{domain}) { # {{{
