@@ -12,6 +12,7 @@ use Sys::Guestfs;
 use Data::Dumper;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS);
 use File::Temp qw( tempfile tempdir);
+use File::Basename;
 
 my $parser = XML::LibXML->new( # {{{
     {
@@ -46,7 +47,7 @@ my $xpath = {  # {{{
 GetOptions($opts,"imagefile=s","domain=s",'destination=s','zip=s@{,}') or pod2usage();
 pod2usage (-verbose=>1,-msg=>"Error: domain or imagefile required") unless (defined($opts->{domain}) or defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: can't use both domain and imagefile") if (defined($opts->{domain}) && defined($opts->{imagefile}));
-pod2usage (-verbose=>1,-msg=>"Error: domain/imagefile and files to extract required") unless scalar @{$opts->{files}};
+pod2usage (-verbose=>1,-msg=>"Error: domain/imagefile and files to extract required") unless scalar @{$opts->{zip}};
 
 # $zip $member->isDirectory()
 
@@ -63,7 +64,10 @@ if ($@ =~ m/Domain not found/) {
 } # }}}
 
 my $domain_xml = $source_domain->get_xml_description();
-die "Refusing to mess with an active VM" if $source_domain->is_active();
+
+print Data::Dumper->Dump([$info],[qw($info)]);
+
+die "Refusing to mess with an active VM - shut it down first" if $source_domain->is_active();
 
 # load the XML into the parser
 my $domain_doc = $parser->load_xml( string => $domain_xml ) or die "Couldn't load XML ($!)";
@@ -75,6 +79,7 @@ die "Failed to load XML" unless ref $domain_doc;
   '/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@file'
 );
 } # }}}
+
 elsif ($opts->{imagefile}) { # {{{
   $source_disk = $opts->{imagefile};
 } else {
@@ -82,13 +87,13 @@ elsif ($opts->{imagefile}) { # {{{
 } # }}}
 
 my $guest = new Sys::Guestfs();
-$guest->add_drive_opts ($source_disk, readonly => 1);
+$guest->add_drive_opts ($source_disk, readonly => 0);
 $guest->launch();
 
 my @roots = $guest->inspect_os ();
-if (@roots == 0) {
+if (@roots == 0) {#{{{
     die "no operating systems found?";
-}
+}#}}}
 
 for my $root (@roots) { # {{{
     printf "Root device: %s\n", $root;
@@ -96,65 +101,39 @@ for my $root (@roots) { # {{{
     my %mps = $guest->inspect_get_mountpoints ($root);
     my @mps = sort { length $a <=> length $b } (keys %mps);
     for my $mp (@mps) { # {{{
-        eval { $guest->mount_ro ($mps{$mp}, $mp) };
+        eval { $guest->mount ($mps{$mp}, $mp) };
         if ($@) {
             print "$@ (ignored)\n"
         }
     } # }}}
 
+    $guest->mkdir_p($opts->{destination});
+
     my $tempdir = File::Temp->newdir( CLEANUP => 1 );
-    my $zip = Archive::Zip->new();
 
-    # fixup windows case sensitivity
-    map { $_ = $guest->case_sensitive_path($_) } @{$opts->{files}};
+    foreach my $zip_filename (@{$opts->{zip}}) { # {{{
+      warn "$zip_filename does not exist" unless -e $zip_filename;
 
-    foreach my $file (@{$opts->{files}}) { # {{{
-      warn "$file does not exist" unless $guest->exists($file);
+      my $zip = Archive::Zip->new();
+      my $status = $zip->read($zip_filename);
+      warn "Couldn't read zip $zip_filename" if $status != AZ_OK;
 
-      if ($guest->is_file($file)) {
-        download_file($zip,$file,$tempdir);
-      } elsif ($guest->is_dir($file)) {
-        my $dir = $file;
-        # recursivly acquire files from a directory
-        my $find0_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
-        my $find0_name = $find0_fh->filename;
-        $guest->find0($dir,$find0_name);
-        # go to the beginning of the file
-        $find0_fh->seek(0,0);
-	  {
-	    local $/="\x00";
-	    foreach my $file (<$find0_fh>) {
-              chomp $file;
-	      download_file($zip,"$dir$file",$tempdir) if $guest->is_file("$dir$file");
-	    }
-	  }
-        $find0_fh->close();
-      }
+      foreach my $member ($zip->members()) {  # {{{
+        my $internal_name = $member->fileName();
+        my $member_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
+        my $member_name = $member_fh->filename;
+        $zip->extractMemberWithoutPaths($member,$member_name);
+        printf("Extracting zip member %s to %s\n",$internal_name,$member_name);
+        upload_file($guest,$member_name,sprintf("%s/%s",$opts->{destination},$internal_name));
+      } # }}}
     } # }}}
-
-    unless ($zip->writeToFileNamed($opts->{zip}) == AZ_OK) {
-      die 'ZIP write error';
-    }
     $guest->umount_all ()
 } # }}}
 
-sub download_file { # {{{
-  my ($zip,$file,$tempdir) = @_;
-
-  my $tempfile_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
-
-  # these objects go out of scope before the zipfile is written to disk,
-  # which would cause them to be deleted too early. Let the tempdir
-  # CLEANUP take care of them instead.
-  $tempfile_fh->unlink_on_destroy(0);
-
-  my $tempfile_name = $tempfile_fh->filename;
-  print "Downloading: $file to $tempfile_name\n";
-  $guest->download ($file, $tempfile_name);
-
-  # queue for adding to zip
-  my $member;
-  $file =~ s/^\///;
-  $member = $zip->addFile($tempfile_name,$file);
-  $member->desiredCompressionMethod( COMPRESSION_DEFLATED );
+sub upload_file { # {{{
+  my ($guest,$source,$destination) = @_;
+  my ($file,$dir) = fileparse($destination);
+  print "source = $source, dir = $dir, file = $file, destination = $destination\n";
+  $guest->mkdir_p($dir);
+  $guest->upload($source,$destination);
 } # }}}
