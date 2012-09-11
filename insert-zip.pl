@@ -35,7 +35,7 @@ my $uri = $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
 my $vmm = Sys::Virt->new(uri=>$uri);
 
 # options defaults
-my $opts = {};
+my $opts = { destination => '/malware'};
 
 # xpath filters
 my $xpath = {  # {{{
@@ -65,7 +65,7 @@ if ($@ =~ m/Domain not found/) {
 
 my $domain_xml = $source_domain->get_xml_description();
 
-print Data::Dumper->Dump([$info],[qw($info)]);
+#print Data::Dumper->Dump([$info],[qw($info)]);
 
 die "Refusing to mess with an active VM - shut it down first" if $source_domain->is_active();
 
@@ -119,6 +119,7 @@ for my $root (@roots) { # {{{
       warn "Couldn't read zip $zip_filename" if $status != AZ_OK;
 
       foreach my $member ($zip->members()) {  # {{{
+        next if $member->isDirectory();
         my $internal_name = $member->fileName();
         my $member_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
         my $member_name = $member_fh->filename;

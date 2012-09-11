@@ -33,7 +33,7 @@ my $vmm = Sys::Virt->new(uri=>$uri);
 # options defaults
 my $opts = {};
 
-GetOptions($opts,"domain=s","fbs=s","port=i","fullcontrl=s","viewonly=s") or pod2usage();
+GetOptions($opts,"domain=s","fbs=s","port=i","fullcontrol=s","viewonly=s") or pod2usage();
 pod2usage (-verbose=>1,-msg=>"Error: --domain [domainname] --fbs [fbs_prefox] --port [number] and are required") unless (length $opts->{domain} && length $opts->{fbs} && length $opts->{port});
 
 # get source domain for cloning # {{{
@@ -69,7 +69,7 @@ my $tempdir = File::Temp->newdir( CLEANUP => 1 );
 my $hostinfo_file_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
 my $passwd_file_fh   = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
 
-my @args = qw(vncreflector -f 4 -t -i /var/run/vncrereflector -l);
+my @args = qw(vncreflector -f 4 -t -i /var/run/vncrereflector -j -l);
 push @args,$opts->{port},"-p",$passwd_file_fh->filename();
 push @args,"-s",$opts->{fbs};
 push @args,$hostinfo_file_fh->filename();
