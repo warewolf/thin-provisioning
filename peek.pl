@@ -18,7 +18,7 @@ my $vmm = Sys::Virt->new(uri=>$uri);
 my $opts = {};
 
 GetOptions($opts,"domain=s","output=s") or pod2usage();
-pod2usage (-verbose=>1,-msg=>"Error: domain and output are required") unless length $opts->{domain} && length $opts->{output};
+pod2usage (-verbose=>1,-msg=>"Error: domain and output are required.  $0 --domain=machine --output=/path/to/ram.dump") unless length $opts->{domain} && length $opts->{output};
 
 my $source_domain;
 eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
