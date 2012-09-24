@@ -6,7 +6,6 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use XML::LibXML;
-#use Carp::Always;
 use Sys::Virt;
 
 my $parser = XML::LibXML->new( # {{{
@@ -25,22 +24,20 @@ my $parser = XML::LibXML->new( # {{{
     }
 ); # }}}
 
-my $uri = $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
-
-my $vmm = Sys::Virt->new(uri=>$uri);
-
-# options defaults
+# options defaults # {{{
 my $opts = {};
+GetOptions($opts,"domain=s","clone=s",'cowpool=s',"help|?","man") or pod2usage();
+pod2usage(1) if ($opts->{help});
+pod2usage(-verbose=>2) if ($opts->{man});
+pod2usage (-verbose=>1,-msg=>"Error: domain and clone are required") unless length $opts->{domain} && length $opts->{clone}; # }}}
 
-# xpath filters
-my $xpath = {  # {{{
-  # XXX FIXME RGH: locate DISK node
-  disk => '/domain/devices/disk[@device="disk" and @type="block" and ends-with(target/@dev,"da")]',
-  file => '/domain/devices/disk[@device="disk" and @type="file" and  ends-with(target/@dev,"da")]',
-}; # }}}
-
-GetOptions($opts,"domain=s","clone=s",'cowpool=s') or pod2usage();
-pod2usage (-verbose=>1,-msg=>"Error: domain and clone are required") unless length $opts->{domain} && length $opts->{clone};
+# connect to LibVirt # {{{
+my $uri = $ENV{LIBVIRT_DEFAULT_URI} || $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
+my $vmm; # XXX RGH FIXME: this doesn't permit remote connections, no auth, etc.
+eval { $vmm = Sys::Virt->new(uri=>$uri); }; # Sys::Virt croak/dies on everything!
+if ($@) {
+  die "Couldn't connect to libvirt! ($!)";
+} # }}}
 
 # get source domain for cloning # {{{
 my $source_domain;
@@ -87,14 +84,13 @@ $uuid->unbindNode();
 my ($mac) = $domain_doc->findnodes('/domain/devices/interface[./@type="network"]/mac');
 $mac->unbindNode();
 
-# define the domain
+# define the domain # {{{
 my $new_domain;
-print STDERR $domain_doc->toString(1);
 eval { $new_domain = $vmm->define_domain($domain_doc->toString())} ;
 if ($@) {
   my $err = $@; $err =~ s/[\r\n]*$//;
   die "Couldn't create domain! ($err)";
-}
+} # }}}
 
 # helper subroutines
 sub create_cow_vol { # {{{
@@ -215,3 +211,5 @@ clone-vm.pl
 =head1 SYNOPSIS
 
 ./clone-vm.pl --domain malware-o2k7 --clone malware-clone --cowpool raidvirt
+
+=cut
