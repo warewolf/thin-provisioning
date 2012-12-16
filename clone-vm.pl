@@ -8,6 +8,8 @@ use Pod::Usage;
 use XML::LibXML;
 use Sys::Virt;
 
+# XXX RGH: You may wonder what all this drivel is here in the options to LibXML:
+# XXX RGH: It's to prevent XML being fed into LibXML from executing arbitrary code through XML includes, etc.
 my $parser = XML::LibXML->new( # {{{
     {
         no_network      => 1,
@@ -42,8 +44,8 @@ if ($@) {
 # get source domain for cloning # {{{
 my $source_domain;
 eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
-# XXX RGH FIXME: There have to be more error cases than "Domain not found" ...
-if ($@ =~ m/Domain not found/) {
+
+if ($@) {
   my $err = $@;
   $err =~ s/[\r\n]$//g;
   die "Couldn't get domain $opts->{domain}! ($err)";
@@ -99,6 +101,7 @@ sub create_cow_vol { # {{{
 
   # get the source disk node path
   # XXX FIXME RGH: locate DISK node
+  # XXX FIXME RGH: This looks for *vda* - the paravirt disk drivers.  This will not work with non-paravirt disks.
   my ($source_disk) = $args->{domain_doc}->findvalue('/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@dev'
   .
   '|'
@@ -123,6 +126,7 @@ sub create_cow_vol { # {{{
   # my $pool = $vmm->get_storage_pool_by_name($dest_pool)
   # create a new volume based on the old one
   # my $cow_vol = $pool->create_volume($xml)
+  # XXX RGH: Yes, this is cheating - I just don't feel like creating all the nodes/attributes/etc in LibXML.
   my $cow_xml=sprintf( # XML for CoW volume {{{
 q|<volume>
   <name>%s</name>
@@ -155,10 +159,9 @@ sub update_disk_image { # {{{
   my $vol_info = $volume->get_info();
   my $disk_image = $volume->get_path();
 
-  use Data::Dumper; print Data::Dumper->Dump([$vol_info],[qw($vol_info)]);
-
   # grab the disk node
   # XXX FIXME RGH: locate DISK node
+  # XXX FIXME RGH: this only works on pavavirt disks!
   my ($disk_node) = $xml->findnodes('/domain/devices/disk[@device="disk" and target/@dev="vda"]');
 
   # modify the <disk> type attribute
@@ -210,6 +213,39 @@ clone-vm.pl
 
 =head1 SYNOPSIS
 
-./clone-vm.pl --domain malware-o2k7 --clone malware-clone --cowpool raidvirt
+clone-vm.pl --domain [source_domain] --clone [destination_domain] --cowpool [libvirt-pool]
+
+  Options:
+    --domain     source domain to base the clone on
+    --clone      name of the clone to create
+    --cowpool    QEmu QCOW2 storage pool (RAM drive is best)
+
+=head1 DESCRIPTION
+
+B<clone-vm.pl> creates new virtual machines, based on existing ones.  It does this cloning at the hypervisor level, meaning that it swaps out disk images for copy-on-write ones, changes MAC addreses to prevent conflicts, and generally makes the hypervisor happy that there are two copies of the same virtual machine.
+
+The base disk image (the source domain) works best if it is a raw disk image - either a partition on a disk, or a logical volume through LVM.  B<clone-vm.pl> also expects the virtual machine disks to be the I<para-virtualized> disks, so please download them from L<http://www.linux-kvm.org/page/WindowsGuestDrivers/Download_Drivers>, or look online for C<qemu virtio windows drivers>.  It's much more fun if you slipstream the drivers into your Windows install image, otherwise a cumbersome process of installing the drivers, adding a small (secondary) virtio disk that uses the drivers, removing the secondary disk, and swapping the libvirt disk bus from ide to virtio is required. 
+
+=head1 OPTIONS
+
+=over 8
+
+=item --domain
+
+The existing virtal machine (domain) in libvirt to base a new thinly-privisioned virtual machine on.  This VM should be powered off, and the disk image associated with it should be made read-only.
+
+If the base disk image isn't read only, the QCOW2 changes file will no longer line up with the underlying filesystem (leading to corruption of the clone).  So don't do that.  You can get a list of defined virtual machines (domains) under libvirt with C<virsh --list --all>.
+
+=item --clone
+
+The name of the I<new> virtual machine to be created.  This is the virtual machine you'll be operating in.
+
+=item --cowpool
+
+The name of the I<file system> pool in libvirt.  This will be most effective if the filesystem is C<ramfs> or C<tmpfs>.  B<tmpfs> is strongly suggested, because tmpfs has a set size - ramfs does not.  If your copy-on-write disk images grow large enough, ramfs will happilly permit them to eat up all the available RAM on your system.  The system used in testing had between 24 and 32 gigabytes of ram, which C<tmpfs> by default will cut in half to reserve one half of it for the RAM filesystem.
+
+The minimum amount of RAM on a system dedicated to running analysis virtual machines should be no fewer than between 4 and 6 gigabytes.  Don't forget that the OS running the virtual machines needs RAM too.
+
+=back
 
 =cut
