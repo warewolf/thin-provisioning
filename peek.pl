@@ -6,24 +6,22 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use XML::LibXML;
-#use Carp::Always;
 use Sys::Virt;
 use Sys::Virt::Domain;
 
-my $uri = $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
-
+# TODO RGH: this doesn't permit remote connections, credential, etc.
+my $uri = $ENV{LIBVIRT_DEFAULT_URI} || $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
 my $vmm = Sys::Virt->new(uri=>$uri);
 
 # options defaults
-my $opts = {};
+my $opts = { resume => 1};
 
-GetOptions($opts,"domain=s","output=s") or pod2usage();
+GetOptions($opts,"domain=s","output=s","resume!") or pod2usage();
 pod2usage (-verbose=>1,-msg=>"Error: domain and output are required.  $0 --domain=machine --output=/path/to/ram.dump") unless length $opts->{domain} && length $opts->{output};
 
 my $source_domain;
 eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
-# XXX RGH FIXME: There have to be more error cases than "Domain not found" ...
-if ($@ =~ m/Domain not found/) {
+if ($@) {
   my $err = $@;
   $err =~ s/[\r\n]$//g;
   die "Couldn't get domain $opts->{domain}! ($err)";
@@ -36,7 +34,8 @@ open(OUTPUT,">",$opts->{output});
 
 # pause VM
 $source_domain->suspend();
-my $READ_SIZE=64*1024; # 64K
+# TODO RGH: Need to look into how to "lock" the VM while dumping its memory.  Otherwise somebody could resume it in the middle of it dumping.
+my $READ_SIZE=64*1024; # 64K - max size as per libvirt protocol
 my $info = $source_domain->get_info();
 
 for (my $offset=0; $offset < $info->{memory}*1024; $offset+=$READ_SIZE) {
@@ -46,5 +45,6 @@ for (my $offset=0; $offset < $info->{memory}*1024; $offset+=$READ_SIZE) {
 close OUTPUT;
 
 # resume VM
-$source_domain->resume();
+$source_domain->resume() if $opts->{resume};
 
+# TODO RGH: add full POD for Pod::Usage for peek.pl

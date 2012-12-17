@@ -6,7 +6,6 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use XML::LibXML;
-#use Carp::Always;
 use Sys::Virt;
 use File::Temp qw( tempfile tempdir);
 
@@ -26,6 +25,7 @@ my $parser = XML::LibXML->new( # {{{
     }
 ); # }}}
 
+# TODO RGH: this doesn't permit remote connections, credentials, etc
 my $uri = $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
 
 my $vmm = Sys::Virt->new(uri=>$uri);
@@ -36,16 +36,16 @@ my $opts = {};
 GetOptions($opts,"domain=s","fbs=s","port=i","fullcontrol=s","viewonly=s") or pod2usage();
 pod2usage (-verbose=>1,-msg=>"Error: --domain [domainname] --fbs [fbs_prefox] --port [number] and are required") unless (length $opts->{domain} && length $opts->{fbs} && length $opts->{port});
 
-# get source domain for cloning # {{{
+# {{{
 my $source_domain;
 eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
-# XXX RGH FIXME: There have to be more error cases than "Domain not found" ...
-if ($@ =~ m/Domain not found/) {
+if ($@) {
   my $err = $@;
   $err =~ s/[\r\n]$//g;
   die "Couldn't get domain $opts->{domain}! ($err)";
 } # }}}
 
+# Sys::Virt::Domain::XML_SECURE is the guru incantation to get private things out of the XML - like passwords.
 my $domain_xml = $source_domain->get_xml_description(Sys::Virt::Domain::XML_SECURE);
 die "Can't record an inactive VM" unless $source_domain->is_active();
 
@@ -88,6 +88,7 @@ exec(@args);
 # full_control
 # view_only
 
+# TODO RGH: add full POD
 
 =head1 NAME
 

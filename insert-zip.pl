@@ -30,7 +30,8 @@ my $parser = XML::LibXML->new( # {{{
     }
 ); # }}}
 
-my $uri = $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
+# RGH FIXME: libvirt uri doesn't permit remote connections, no auth, etc.
+my $uri = $ENV{LIBVIRT_DEFAULT_URI} || $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
 
 my $vmm = Sys::Virt->new(uri=>$uri);
 
@@ -39,47 +40,44 @@ my $opts = { destination => '/malware'};
 
 # xpath filters
 my $xpath = {  # {{{
-  # XXX FIXME RGH: locate DISK node
+  # FIXME RGH: only operates on virtio disks
   disk => '/domain/devices/disk[@device="disk" and @type="block" and ends-with(target/@dev,"da")]',
   file => '/domain/devices/disk[@device="disk" and @type="file" and  ends-with(target/@dev,"da")]',
 }; # }}}
 
-GetOptions($opts,"imagefile=s","domain=s",'destination=s','zip=s@{,}') or pod2usage();
+GetOptions($opts,"imagefile=s","domain=s",'destination=s','zip=s@{,}','help|?','man') or pod2usage();
 pod2usage (-verbose=>1,-msg=>"Error: domain or imagefile required") unless (defined($opts->{domain}) or defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: can't use both domain and imagefile") if (defined($opts->{domain}) && defined($opts->{imagefile}));
 pod2usage (-verbose=>1,-msg=>"Error: domain/imagefile and files to extract required") unless scalar @{$opts->{zip}};
-
-# $zip $member->isDirectory()
+pod2usage(1) if $opts->{help};
+pod2usage(-verbose => 2) if $opts->{man};
 
 my $source_disk;
 if ($opts->{domain}) { # {{{
-# get source domain # {{{
-my $source_domain;
-eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
-# XXX RGH FIXME: There have to be more error cases than "Domain not found" ...
-if ($@ =~ m/Domain not found/) {
-  my $err = $@;
-  $err =~ s/[\r\n]$//g;
-  die "Couldn't get domain $opts->{domain}! ($err)";
+  # get source domain # {{{
+  my $source_domain;
+  eval { $source_domain = $vmm->get_domain_by_name($opts->{domain}) };
+  if ($@) {
+    my $err = $@;
+    $err =~ s/[\r\n]$//g;
+    die "Couldn't get domain $opts->{domain}! ($err)";
+  } # }}}
+
+  my $domain_xml = $source_domain->get_xml_description();
+
+  die "Refusing to mess with an active VM - shut it down first" if $source_domain->is_active();
+
+  # load the XML into the parser
+  my $domain_doc = $parser->load_xml( string => $domain_xml ) or die "Couldn't load XML ($!)";
+  die "Failed to load XML" unless ref $domain_doc;
+
+  # RGH FIXME: disk selection XPath only selects virtio disks
+  ($source_disk) = $domain_doc->findvalue(
+    '/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@dev'.
+    '|'.
+    '/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@file'
+  );
 } # }}}
-
-my $domain_xml = $source_domain->get_xml_description();
-
-#print Data::Dumper->Dump([$info],[qw($info)]);
-
-die "Refusing to mess with an active VM - shut it down first" if $source_domain->is_active();
-
-# load the XML into the parser
-my $domain_doc = $parser->load_xml( string => $domain_xml ) or die "Couldn't load XML ($!)";
-die "Failed to load XML" unless ref $domain_doc;
-
-($source_disk) = $domain_doc->findvalue(
-  '/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@dev'.
-  '|'.
-  '/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@file'
-);
-} # }}}
-
 elsif ($opts->{imagefile}) { # {{{
   $source_disk = $opts->{imagefile};
 } else {
@@ -87,6 +85,7 @@ elsif ($opts->{imagefile}) { # {{{
 } # }}}
 
 my $guest = new Sys::Guestfs();
+# TODO RGH: figure out if we want to use Sys::GuestFS against a domain to dig up all disks/partitions "drives"?
 $guest->add_drive_opts ($source_disk, readonly => 0);
 $guest->launch();
 
@@ -96,39 +95,39 @@ if (@roots == 0) {#{{{
 }#}}}
 
 for my $root (@roots) { # {{{
-    printf "Root device: %s\n", $root;
+  printf "Root device: %s\n", $root;
 
-    my %mps = $guest->inspect_get_mountpoints ($root);
-    my @mps = sort { length $a <=> length $b } (keys %mps);
-    for my $mp (@mps) { # {{{
-        eval { $guest->mount ($mps{$mp}, $mp) };
-        if ($@) {
-            print "$@ (ignored)\n"
-        }
+  my %mps = $guest->inspect_get_mountpoints ($root);
+  my @mps = sort { length $a <=> length $b } (keys %mps);
+  for my $mp (@mps) { # {{{
+    eval { $guest->mount ($mps{$mp}, $mp) };
+    if ($@) {
+      print "$@ (ignored)\n"
+    }
+  } # }}}
+
+  $guest->mkdir_p($opts->{destination});
+
+  my $tempdir = File::Temp->newdir( CLEANUP => 1 );
+
+  foreach my $zip_filename (@{$opts->{zip}}) { # {{{
+    warn "$zip_filename does not exist" unless -e $zip_filename;
+
+    my $zip = Archive::Zip->new();
+    my $status = $zip->read($zip_filename);
+    warn "Couldn't read zip $zip_filename" if $status != AZ_OK;
+
+    foreach my $member ($zip->members()) {  # {{{
+      next if $member->isDirectory();
+      my $internal_name = $member->fileName();
+      my $member_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
+      my $member_name = $member_fh->filename;
+      $zip->extractMemberWithoutPaths($member,$member_name);
+      printf("Extracting zip member %s to %s\n",$internal_name,$member_name);
+      upload_file($guest,$member_name,sprintf("%s/%s",$opts->{destination},$internal_name));
     } # }}}
-
-    $guest->mkdir_p($opts->{destination});
-
-    my $tempdir = File::Temp->newdir( CLEANUP => 1 );
-
-    foreach my $zip_filename (@{$opts->{zip}}) { # {{{
-      warn "$zip_filename does not exist" unless -e $zip_filename;
-
-      my $zip = Archive::Zip->new();
-      my $status = $zip->read($zip_filename);
-      warn "Couldn't read zip $zip_filename" if $status != AZ_OK;
-
-      foreach my $member ($zip->members()) {  # {{{
-        next if $member->isDirectory();
-        my $internal_name = $member->fileName();
-        my $member_fh = File::Temp->new(DIR => $tempdir, SUFFIX => ".tmp");
-        my $member_name = $member_fh->filename;
-        $zip->extractMemberWithoutPaths($member,$member_name);
-        printf("Extracting zip member %s to %s\n",$internal_name,$member_name);
-        upload_file($guest,$member_name,sprintf("%s/%s",$opts->{destination},$internal_name));
-      } # }}}
-    } # }}}
-    $guest->umount_all ()
+  } # }}}
+  $guest->umount_all ()
 } # }}}
 
 sub upload_file { # {{{

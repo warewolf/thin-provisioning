@@ -8,8 +8,8 @@ use Pod::Usage;
 use XML::LibXML;
 use Sys::Virt;
 
-# XXX RGH: You may wonder what all this drivel is here in the options to LibXML:
-# XXX RGH: It's to prevent XML being fed into LibXML from executing arbitrary code through XML includes, etc.
+# XXX RGH XXX: You may wonder what all this drivel is here in the options to LibXML:
+# XXX RGH XXX: It's to prevent bad XML fed into LibXML from executing arbitrary code through XML includes, etc.
 my $parser = XML::LibXML->new( # {{{
     {
         no_network      => 1,
@@ -27,15 +27,16 @@ my $parser = XML::LibXML->new( # {{{
 ); # }}}
 
 # options defaults # {{{
-my $opts = {};
+my $opts = { cowpool => "ram" };
 GetOptions($opts,"domain=s","clone=s",'cowpool=s',"help|?","man") or pod2usage();
 pod2usage(1) if ($opts->{help});
 pod2usage(-verbose=>2) if ($opts->{man});
 pod2usage (-verbose=>1,-msg=>"Error: domain and clone are required") unless length $opts->{domain} && length $opts->{clone}; # }}}
 
 # connect to LibVirt # {{{
+# RGH FIXME: libvirt uri doesn't permit remote connections, no auth, etc.
 my $uri = $ENV{LIBVIRT_DEFAULT_URI} || $ENV{VIRSH_DEFAULT_CONNECT_URI} || "qemu:///system";
-my $vmm; # XXX RGH FIXME: this doesn't permit remote connections, no auth, etc.
+my $vmm;
 eval { $vmm = Sys::Virt->new(uri=>$uri); }; # Sys::Virt croak/dies on everything!
 if ($@) {
   die "Couldn't connect to libvirt! ($!)";
@@ -94,14 +95,15 @@ if ($@) {
   die "Couldn't create domain! ($err)";
 } # }}}
 
+# and we're done!
+
 # helper subroutines
 sub create_cow_vol { # {{{
   my $args;
   %{$args} = @_;
 
   # get the source disk node path
-  # XXX FIXME RGH: locate DISK node
-  # XXX FIXME RGH: This looks for *vda* - the paravirt disk drivers.  This will not work with non-paravirt disks.
+  # RGH FIXME: disk selection XPath only selects virtio disks
   my ($source_disk) = $args->{domain_doc}->findvalue('/domain/devices/disk[@device="disk" and target/@dev="vda"]/source/@dev'
   .
   '|'
@@ -121,12 +123,7 @@ sub create_cow_vol { # {{{
 
   my $info = $backing_vol->get_info() ;
 
-  # get that volume's size
-  # get the pool this volume will be in
-  # my $pool = $vmm->get_storage_pool_by_name($dest_pool)
-  # create a new volume based on the old one
-  # my $cow_vol = $pool->create_volume($xml)
-  # XXX RGH: Yes, this is cheating - I just don't feel like creating all the nodes/attributes/etc in LibXML.
+  # RGH: Yes, this is cheating - I just don't feel like creating all the nodes/attributes/etc in LibXML.
   my $cow_xml=sprintf( # XML for CoW volume {{{
 q|<volume>
   <name>%s</name>
@@ -160,8 +157,7 @@ sub update_disk_image { # {{{
   my $disk_image = $volume->get_path();
 
   # grab the disk node
-  # XXX FIXME RGH: locate DISK node
-  # XXX FIXME RGH: this only works on pavavirt disks!
+  # FIXME RGH: only operates on virtio disks
   my ($disk_node) = $xml->findnodes('/domain/devices/disk[@device="disk" and target/@dev="vda"]');
 
   # modify the <disk> type attribute
@@ -194,14 +190,19 @@ sub update_disk_image { # {{{
 
   # create a new driver element
   my $driver = $xml->createElement("driver");
-  my $driver_name_attr=$xml->createAttribute("name","qemu");
-  my $driver_type_attr=$xml->createAttribute("type","qcow2");
-  # this makes snapshots take 5 seconds instead of 5 minutes.
-  # XXX RGH FIXME: try cache = none?
-  my $driver_cache_attr=$xml->createAttribute("cache","writethrough");
 
-  # assemble the driver element + attributes
-  map { $driver->addChild($_) } $driver_name_attr,$driver_type_attr,$driver_cache_attr;
+  # driver element attributes
+  my $attributes = {
+    name => 'qemu',
+    type => 'qcow2',
+    cache => "none",
+  };
+
+  # create & add the elements
+  while (my ($name,$val) = %$attributes ) {
+    $driver->addChild( $xml->createAttribute($name,$val) );
+  };
+
   # and replace it
   my ($old_driver) = $disk_node->findnodes('./driver');
   $old_driver->replaceNode($driver);
@@ -209,7 +210,7 @@ sub update_disk_image { # {{{
 
 =head1 NAME
 
-clone-vm.pl
+clone-vm.pl - clone a VM to a lightweight one
 
 =head1 SYNOPSIS
 
@@ -222,9 +223,9 @@ clone-vm.pl --domain [source_domain] --clone [destination_domain] --cowpool [lib
 
 =head1 DESCRIPTION
 
-B<clone-vm.pl> creates new virtual machines, based on existing ones.  It does this cloning at the hypervisor level, meaning that it swaps out disk images for copy-on-write ones, changes MAC addreses to prevent conflicts, and generally makes the hypervisor happy that there are two copies of the same virtual machine.
+B<clone-vm.pl> creates new virtual machines, based on existing ones.  It does this by cloning virtual machines at the hypervisor level, meaning that it swaps out disk images for light-weight copy-on-write ones, changes MAC addreses to prevent conflicts, and generally makes the hypervisor happy that there are two copies of the same virtual machine.  The OS is still the same OS - e.g. if it's windows, it'll have the same hostname and most likely will complain that there's a duplicate netbios name on the network if two clones can see each other.
 
-The base disk image (the source domain) works best if it is a raw disk image - either a partition on a disk, or a logical volume through LVM.  B<clone-vm.pl> also expects the virtual machine disks to be the I<para-virtualized> disks, so please download them from L<http://www.linux-kvm.org/page/WindowsGuestDrivers/Download_Drivers>, or look online for C<qemu virtio windows drivers>.  It's much more fun if you slipstream the drivers into your Windows install image, otherwise a cumbersome process of installing the drivers, adding a small (secondary) virtio disk that uses the drivers, removing the secondary disk, and swapping the libvirt disk bus from ide to virtio is required. 
+The base disk image (the source virtual machine) works best if it is a raw disk image - either a partition on a disk, or a logical volume through LVM.  B<clone-vm.pl> also expects the virtual machine disks to be I<virtio> disks, so please download drivers for them them from L<linux-kvm.org|http://www.linux-kvm.org/page/WindowsGuestDrivers/Download_Drivers>, or look online for C<qemu virtio windows drivers> if the linux-kvm.org link is out of date.
 
 =head1 OPTIONS
 
