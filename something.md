@@ -1,6 +1,5 @@
 ---
-layout: page
-owner_name: warewolf
+layout: static
 ---
 ### There are words here.
 
