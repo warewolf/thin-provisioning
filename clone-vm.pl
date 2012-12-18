@@ -84,7 +84,7 @@ my ($uuid) = $domain_doc->findnodes('/domain/uuid');
 $uuid->unbindNode();
 
 # remove MAC node to have libvirt autogen it
-my ($mac) = $domain_doc->findnodes('/domain/devices/interface[./@type="network"]/mac');
+my ($mac) = $domain_doc->findnodes('/domain/devices/interface[./@type="network"  or ./@type="bridge"]/mac');
 $mac->unbindNode();
 
 # define the domain # {{{
