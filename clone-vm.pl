@@ -199,7 +199,7 @@ sub update_disk_image { # {{{
   };
 
   # create & add the elements
-  while (my ($name,$val) = %$attributes ) {
+  while (my ($name,$val) = each %$attributes ) {
     $driver->addChild( $xml->createAttribute($name,$val) );
   };
 
