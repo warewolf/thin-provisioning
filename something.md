@@ -1,5 +1,5 @@
 ---
-layout: static
+layout: midnight
 ---
 ### There are words here.
 
