@@ -766,11 +766,14 @@ dt {
 }
 #header nav li.fork {
   float: left;
-  margin-left: 0px;
+  margin-left: 3px;
+  margin-right: 3px;
 }
+
 #header nav li.downloads {
   float: right;
-  margin-left: 6px;
+  margin-left: 3px;
+  margin-right: 3px;
 }
 #header nav li.title {
   float: right;
