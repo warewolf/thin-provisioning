@@ -195,7 +195,7 @@ sub update_disk_image { # {{{
   my $attributes = {
     name => 'qemu',
     type => 'qcow2',
-    cache => "none",
+    cache => "writeback", # tmpfs doesn't support none for a cache format.  Writeback ACKs when data is in host page cache.
   };
 
   # create & add the elements
