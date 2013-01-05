@@ -7,6 +7,10 @@ use Getopt::Long;
 use Pod::Usage;
 use XML::LibXML;
 use Sys::Virt;
+use Sys::Guestfs;
+use Win::Hivex;
+use File::Temp qw( tempfile tempdir);
+use Encode qw(from_to);
 
 # XXX RGH XXX: You may wonder what all this drivel is here in the options to LibXML:
 # XXX RGH XXX: It's to prevent bad XML fed into LibXML from executing arbitrary code through XML includes, etc.
@@ -27,8 +31,8 @@ my $parser = XML::LibXML->new( # {{{
 ); # }}}
 
 # options defaults # {{{
-my $opts = { cowpool => "ram" };
-GetOptions($opts,"domain=s","clone=s",'cowpool=s',"help|?","man") or pod2usage();
+my $opts = { cowpool => "ram","rename"=>1, };
+GetOptions($opts,"domain=s","clone=s",'cowpool=s',"help|?","man","rename!") or pod2usage();
 pod2usage(1) if ($opts->{help});
 pod2usage(-verbose=>2) if ($opts->{man});
 pod2usage (-verbose=>1,-msg=>"Error: domain and clone are required") unless length $opts->{domain} && length $opts->{clone}; # }}}
@@ -97,7 +101,68 @@ if ($@) {
 
 # and we're done!
 
+if ($opts->{rename}) {
+
+  my $guest = new Sys::Guestfs();
+  $guest->add_domain($opts->{clone});
+  $guest->launch();
+
+  my @roots = $guest->inspect_os();
+  die "No operating systems found?" if (@roots == 0);
+
+  my $root = $roots[0];
+  $guest->mount($root,"/");
+
+  my $systemroot = $guest->inspect_get_windows_systemroot($root);
+  # create a temporary area to download registry hives
+  my $tempdir = File::Temp->newdir( "clone-vm-XXXXX", CLEANUP => 1 );
+  my $path = $guest->case_sensitive_path(sprintf("%s/system32/config/system",$systemroot));
+
+  # generate temporary filename for downloaded hive
+  my $temp_system_hive_fh = File::Temp->new("system-hive-XXXXX", DIR=>$tempdir, SUFFIX=>".tmp", UNLINK => 0, CLEANUP => 0);
+  $guest->download($path,$temp_system_hive_fh->filename);
+
+  my $hive = Win::Hivex->open($temp_system_hive_fh->filename, write => 1);
+
+  my @places = (
+    { key => "ControlSet001\\Control\\ComputerName\\ComputerName", value => "ComputerName", format=>"utf16le",},
+    { key => "ControlSet001\\Services\\Eventlog", value => "ComputerName", format=>"utf16le" },
+    { key => "ControlSet001\\Services\\Tcpip\\Parameters", value => "Hostname",format=>"utf16le" },
+    { key => "ControlSet001\\Services\\Tcpip\\Parameters", value => "NV Hostname",format=>"utf16le" },
+  );
+
+  foreach my $location (@places) {
+    my $key = $hive->root();
+
+    my $registry_path = $location->{key};
+    my $registry_path_value = $location->{value};
+
+    # iterate down the root
+    map { $key = $hive->node_get_child($key,$_) } split(m/\\/,$registry_path);
+
+    my $new_hostname_ref = 
+      { key => $registry_path_value,
+	t => 1,
+	value => utf16le($opts->{clone}."\x00"),
+      };
+
+    $hive->node_set_value($key,$new_hostname_ref);
+
+    # save changes
+    $hive->commit($temp_system_hive_fh->filename);
+  }
+  $guest->upload($temp_system_hive_fh->filename,$path);
+  $guest->umount_all ()
+}
+
 # helper subroutines
+sub utf16le {
+    my $s = shift;
+    from_to ($s, "ascii", "utf-16le");
+    $s;
+}
+
+
 sub create_cow_vol { # {{{
   my $args;
   %{$args} = @_;
@@ -214,12 +279,13 @@ clone-vm.pl - clone a VM to a lightweight one
 
 =head1 SYNOPSIS
 
-clone-vm.pl --domain [source_domain] --clone [destination_domain] --cowpool [libvirt-pool]
+clone-vm.pl --domain [source_domain] --clone [destination_domain] --cowpool [libvirt-pool] --rename
 
   Options:
     --domain     source domain to base the clone on
     --clone      name of the clone to create
     --cowpool    QEmu QCOW2 storage pool (RAM drive is best)
+    --[no]rename [Do not] Rename Windows XP hostname 
 
 =head1 DESCRIPTION
 
@@ -246,6 +312,10 @@ The name of the I<new> virtual machine to be created.  This is the virtual machi
 The name of the I<file system> pool in libvirt.  This will be most effective if the filesystem is C<ramfs> or C<tmpfs>.  B<tmpfs> is strongly suggested, because tmpfs has a set size - ramfs does not.  If your copy-on-write disk images grow large enough, ramfs will happilly permit them to eat up all the available RAM on your system.  The system used in testing had between 24 and 32 gigabytes of ram, which C<tmpfs> by default will cut in half to reserve one half of it for the RAM filesystem.
 
 The minimum amount of RAM on a system dedicated to running analysis virtual machines should be no fewer than between 4 and 6 gigabytes.  Don't forget that the OS running the virtual machines needs RAM too.
+
+=item --[no]rename
+
+By default B<clone-vm.pl> will rename the hostname in the registry of a Windows XP system to prevent netbios name conflicts.  Use --norename to turn this off.
 
 =back
 
