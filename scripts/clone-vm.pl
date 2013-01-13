@@ -102,9 +102,20 @@ if ($@) {
 # and we're done!
 
 if ($opts->{rename}) {
-
   my $guest = new Sys::Guestfs();
-  $guest->add_domain($opts->{clone});
+
+  my $retries = 0;
+  RETRY: eval { $retries++; $guest->add_domain($opts->{clone}); };
+  if ($@ && $retries < 5) {
+    # couldn't find domain in libvirt, sleep a quarter second
+    print STDERR "Waiting on libvirt ...\n";
+    select(undef, undef, undef, 0.125);
+    goto RETRY;
+  } else {
+    die "Couldn't find clone VM in libvirt, fatal error.";
+  }
+
+
   $guest->launch();
 
   my @roots = $guest->inspect_os();
@@ -167,6 +178,8 @@ sub create_cow_vol { # {{{
   my $args;
   %{$args} = @_;
 
+  my ($group) = (getgrnam("libvirt"))[2];
+
   # get the source disk node path
   # RGH FIXME: disk selection XPath only selects virtio disks
   my ($source_disk) = $args->{domain_doc}->findvalue('/domain/devices/disk[@device="disk" and contains(target/@dev,"da")]/source/@dev'
@@ -195,6 +208,7 @@ q|<volume>
   <capacity>%d</capacity>
   <target>
     <format type='qcow2'/>
+  <permissions><group>%d</group><mode>0777</mode></permissions>
   </target>
   <backingStore>
     <path>%s</path>
@@ -203,6 +217,7 @@ q|<volume>
 </volume>|,
   $args->{name}.".qcow2",
   $info->{capacity},
+  $group,
   $source_disk); # }}}
   return $args->{cow_pool}->create_volume($cow_xml);
 } # }}}
