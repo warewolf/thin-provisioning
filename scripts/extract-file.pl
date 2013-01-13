@@ -6,7 +6,6 @@ use warnings;
 use Getopt::Long;
 use Pod::Usage;
 use XML::LibXML;
-use Carp::Always;
 use Sys::Virt;
 use Sys::Guestfs;
 use Data::Dumper;
