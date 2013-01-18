@@ -105,12 +105,12 @@ if ($opts->{rename}) {
   my $guest = new Sys::Guestfs();
 
   my $retries = 0;
-  RETRY: eval { $retries++; $guest->add_domain($opts->{clone}); };
-  if ($@ && $retries < 5) {
+  eval { $guest->add_domain($opts->{clone}); };
+  if (defined($@) && $retries++ < 5) {
     # couldn't find domain in libvirt, sleep a quarter second
-    print STDERR "Waiting on libvirt ...\n";
-    select(undef, undef, undef, 0.125);
-    goto RETRY;
+    print "Waiting on libvirt ...\n";
+    select(undef, undef, undef, 0.250);
+    eval { $guest->add_domain($opts->{clone}); };
   } else {
     die "Couldn't find clone VM in libvirt, fatal error.";
   }
