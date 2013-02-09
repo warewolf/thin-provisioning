@@ -96,4 +96,4 @@ clone-vm.pl
 
 =head1 SYNOPSIS
 
-./clone-vm.pl --domain malware-o2k7 --clone malware-clone --cowpool raidvirt
+./record-vnc.pl --domain malware-o2k7 --fbs class_session-a --port 5910 --fullcontrol=password --viewonly=password
