@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html class="no-js consumer" lang="en">
+  <head>
+
+    <script>
+(function(e, p){
+    var m = location.href.match(/platform=(win8|win|mac|linux|cros)/);
+    e.id = (m && m[1]) ||
+           (p.indexOf('Windows NT 6.2') > -1 ? 'win8' : p.indexOf('Windows') > -1 ? 'win' : p.indexOf('Mac') > -1 ? 'mac' : p.indexOf('CrOS') > -1 ? 'cros' : 'linux');
+    e.className = e.className.replace(/\bno-js\b/,'js');
+  })(document.documentElement, window.navigator.userAgent)
+    </script>
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <meta content=
+    "Google Chrome is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier."
+    name="description">
+    <title>
+      Chrome Browser
+    </title>
+    <link href="https://plus.google.com/100585555255542998765" rel="publisher">
+    <link href="//www.google.com/images/icons/product/chrome-32.png" rel="icon" type="image/ico">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&amp;subset=latin" rel=
+    "stylesheet">
+    <link href="/intl/en/chrome/assets/common/css/chrome.min.css" rel="stylesheet">
+    <script src="//www.google.com/js/gweb/analytics/autotrack.js">
+</script>
+    <script>
+new gweb.analytics.AutoTrack({
+          profile: 'UA-26908291-1'
+        });
+    </script>
+  </head>
+  <body class="" id="grid">
+    <div class="compact" id="header">
+      <div class="g-section g-tpl-160 g-split">
+        <div class="g-unit g-first" id="header-logo">
+          <a href="/intl/en/chrome/"><img alt="Chrome" data-g-event="nav-logo" data-g-label=
+          "consumer-home" id="logo" src=
+          "/intl/en/chrome/assets/common/images/chrome_logo_2x.png"></a>
+        </div>
+        <ul class="g-unit g-section g-tpl-nest" id="nav">
+          <li class="g-unit active current">
+            <a href="/intl/en/chrome/browser/"><span data-g-event="nav-dropdown" data-g-label=
+            "browser-home">Browser</span></a>
+            <ul>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="browser-download" href=
+                "/intl/en/chrome/browser/index.html#eula">Download</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="browser-features" href=
+                "/intl/en/chrome/browser/features.html">Features</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="browser-mobile" href=
+                "/intl/en/chrome/browser/mobile/">Mobile</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="browser-gallery" href=
+                "/intl/en/chrome/browser/gallery.html">Gallery</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="browser-support" href=
+                "http://support.google.com/chrome?hl=en">Support</a>
+              </li>
+            </ul>
+          </li>
+          <li class="g-unit">
+            <a href="/intl/en/chrome/devices/"><span data-g-event="nav-dropdown" data-g-label=
+            "devices-home">Devices</span></a>
+            <ul>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="devices-features" href=
+                "/intl/en/chrome/devices/features.html">Features</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="devices-chromebooks" href=
+                "/intl/en/chrome/devices/chromebooks.html">Chromebook</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="devices-chromebox" href=
+                "/intl/en/chrome/devices/chromebox.html">Chromebox</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="devices-support" href=
+                "/intl/en/chrome/devices/support.html">Support</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="devices-buy-online" href=
+                "/intl/en/chrome/devices/buynow.html#online">Buy online</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="devices-buy-instore" href=
+                "/intl/en/chrome/devices/buynow.html#instore">Buy in store</a>
+              </li>
+            </ul>
+          </li>
+          <li class="g-unit">
+            <a href="/intl/en/chrome/webstore/"><span data-g-event="nav-dropdown" data-g-label=
+            "webstore-home">Web Store</span></a>
+            <ul>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="webstore-features" href=
+                "/intl/en/chrome/webstore/features.html">Features</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="webstore-apps" href=
+                "/intl/en/chrome/webstore/apps.html">Apps</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="webstore-exts" href=
+                "/intl/en/chrome/webstore/extensions.html">Extensions</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="webstore-themes" href=
+                "/intl/en/chrome/webstore/themes.html">Themes</a>
+              </li>
+              <li>
+                <a data-g-event="nav-dropdown" data-g-label="webstore-support" href=
+                "http://support.google.com/chrome_webstore?hl=en">Support</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="browser-landing" id="main">
+      <div class="compact marquee-stacked" id="marquee">
+        <div class="marquee-copy">
+          <h1>
+            Get a fast, free web browser
+          </h1>
+          <p>
+            Google Chrome runs websites and applications with lightning speed.
+          </p><a class="button eula-download-button" data-g-event="cta" data-g-label=
+          "download-chrome" href="javascript:void(0)">Download Chrome</a>
+          <p class="sub-button win">
+            For Windows 8/7/Vista/XP
+          </p>
+          <p class="sub-button win8">
+            For Windows 8/7/Vista/XP. Not available for Windows RT.
+          </p>
+          <p class="sub-button mac">
+            For Mac OS X 10.6 or later
+          </p>
+          <p class="sub-button linux">
+            For Linux (Debian/Ubuntu/Fedora/openSUSE)
+          </p>
+        </div>
+        <div class="marquee-image">
+          <a class="eula-download-button" data-g-event="cta-img" data-g-label="download-chrome"
+          href="javascript:void(0)"><img alt="" class="mac hi-dpi" src=
+          "/intl/en/chrome/assets/common/images/browser-ss/browser-mac.png"> <img alt="" class=
+          "win" src="/intl/en/chrome/assets/common/images/browser-ss/browser-win.png"> <img alt=""
+          class="win8" src="/intl/en/chrome/assets/common/images/browser-ss/browser-win8.png">
+          <img alt="" class="linux" src=
+          "/intl/en/chrome/assets/common/images/browser-ss/browser-linux.png"></a>
+        </div>
+        <div class="tooltips chrome-only">
+          <div class="browser-pin omnibox" data-g-event="tooltip" data-g-label=
+          "browser-home-omnibox">
+            <div class="tooltip-content">
+              Search the web right from the address bar.
+            </div>
+          </div>
+          <div class="browser-pin newtab">
+            <div class="tooltip-content" data-g-event="tooltip" data-g-label="browser-home-newtab">
+              Open a new tab to get to your favorite sites quickly.
+            </div>
+          </div>
+          <div class="browser-pin bookmarks">
+            <div class="tooltip-content" data-g-event="tooltip" data-g-label=
+            "browser-home-bookmarks">
+              Bookmark a page to find it easily later.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="compact promos chrome-only">
+        <div class="g-section g-tpl-nest g-col-4-4-4">
+          <div class="g-unit">
+            <div class="g-content">
+              <h2>
+                Customize your browser
+              </h2>
+              <p>
+                Personalize your Chrome browser by installing web apps, themes and extensions.
+              </p>
+              <p class="more">
+                <a data-g-event="promo-nav" data-g-label="browser-visit-webstore" href=
+                "https://chrome.google.com/webstore/category/home?utm_campaign=en&amp;utm_source=en-et-na-us-home&amp;utm_medium=et">
+                Visit Chrome Web Store</a>
+              </p>
+            </div>
+          </div>
+          <div class="g-unit">
+            <div class="g-content">
+              <h2>
+                Read an Awesome Book!
+              </h2>
+              <p>
+                It's a little book about dreaming big. Read it in any one of 17 awesome languages
+                on your computer, tablet or phone.
+              </p>
+              <p class="more">
+                <a data-g-event="promo-nav" data-g-label="browser-visit-awesomebook" href=
+                "https://chrome.google.com/webstore/detail/an-awesome-book/jcafjdhiidcpdgpdbpnllmpheogojkfl?hl=en"
+                target="_blank">Read Book</a>
+              </p>
+            </div>
+          </div>
+          <div class="g-unit g-first">
+            <div class="g-content">
+              <h2>
+                5GB free with Google Drive
+              </h2>
+              <p>
+                Drive is the hub for all your stuff. Access any file type from anywhere - in your
+                home, office, on the road and of course, in your Chrome browser.
+              </p>
+              <p class="more">
+                <a data-g-event="promo-nav" data-g-label="browser-drive-promo" href=
+                "https://drive.google.com/start?utm_medium=et&amp;utm_source=chrome&amp;utm_campaign=dlpage&amp;usp=mkt-et-chrome-dl">
+                Learn more</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      <div class="compact">
+        <div class="g-section g-tpl-nest">
+          <div class="g-unit g-first">
+            <h4>
+              <a data-g-event="nav-footer" data-g-label="consumer-home" href=
+              "/intl/en/chrome/index.html">Products</a>
+            </h4>
+            <ul>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="consumer-browser" href=
+                "/intl/en/chrome/browser/">Browser</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="consumer-devices" href=
+                "/intl/en/chrome/devices/">Devices</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="consumer-webstore" href=
+                "/intl/en/chrome/webstore/">Web Store</a>
+              </li>
+            </ul>
+          </div>
+          <div class="g-unit">
+            <h4>
+              <a data-g-event="nav-footer" data-g-label="business-home" href=
+              "/intl/en/chrome/business/">Businesses</a>
+            </h4>
+            <ul>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="business-browser" href=
+                "/intl/en/chrome/business/browser/">Browser</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="business-devices" href=
+                "/intl/en/chrome/business/devices/">Devices</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="business-webstore" href=
+                "/intl/en/chrome/business/webstore/">Web Store</a>
+              </li>
+            </ul>
+          </div>
+          <div class="g-unit">
+            <h4>
+              <a data-g-event="nav-footer" data-g-label="education-home" href=
+              "/intl/en/chrome/education/">Education</a>
+            </h4>
+            <ul>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="education-browser" href=
+                "/intl/en/chrome/education/browser/">Browser</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="education-devices" href=
+                "/intl/en/chrome/education/devices/">Devices</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="education-webstore" href=
+                "/intl/en/chrome/education/webstore/">Web Store</a>
+              </li>
+            </ul>
+          </div>
+          <div class="g-unit">
+            <h4>
+              Dev and Partners
+            </h4>
+            <ul>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="dev-chromium" href=
+                "http://www.chromium.org/">Chromium</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="dev-chromeos" href=
+                "http://www.chromium.org/chromium-os">Chrome OS</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="dev-webstore" href=
+                "https://developers.google.com/chrome/web-store/?hl=en">Chrome Web Store</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="dev-experiments" href=
+                "http://www.chromeexperiments.com/">Chrome Experiments</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="dev-code" href=
+                "http://code.google.com/intl/en/chrome/">Google Code</a>
+              </li>
+            </ul>
+          </div>
+          <div class="g-unit g-last">
+            <h4>
+              Latest News
+            </h4>
+            <ul>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="news-chromeblog" href=
+                "http://chrome.blogspot.com/">Chrome Blog</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="news-youtube" href=
+                "http://www.youtube.com/user/googlechrome?hl=en">YouTube Channel</a>
+              </li>
+              <li>
+                <a data-g-event="nav-footer" data-g-label="news-plus" href=
+                "https://plus.google.com/100585555255542998765/posts">Google+ Page</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="g-section g-tpl-50-50 g-split" id="sub-footer">
+        <div class="g-unit g-first">
+          <ul id="chrome-footer-global">
+            <li>
+              <a href="/">Google</a>
+            </li>
+            <li>
+              <a data-g-event="nav-subfooter" data-g-label="about" href=
+              "http://www.google.com/intl/en/about/">About Google</a>
+            </li>
+            <li>
+              <a data-g-event="nav-subfooter" data-g-label="privacy" href=
+              "http://www.google.com/chrome/intl/en/privacy.html">Chrome Privacy</a>
+            </li>
+            <li>
+              <a data-g-event="nav-subfooter" data-g-label="help" href=
+              "https://support.google.com/chrome/?hl=en&amp;amp;p=mktg_help">Help</a>
+            </li>
+          </ul>
+          <p id="cdslink">
+            Looking for Chrome Systems? Chrome Systems is now <a data-g-label=
+            "cds-outbout-referral" href="http://www.chromedata.com">Chrome Data Solutions</a>.
+          </p><script>
+if (!document.location.hash.match(/.*cds*/)) {
+          document.getElementById('cdslink').style.display = 'none';
+        };
+          </script>
+        </div>
+        <div class="g-unit">
+          <div id="locale-switcher">
+            <select onchange=
+            "var href=this[this.selectedIndex].value;if(href!=''){window.location.href=href};">
+              <option value="//www.google.com/intl/id/chrome/browser/">
+                Bahasa Indonesia
+              </option>
+              <option value="//www.google.com/intl/ms/chrome/browser/">
+                Bahasa Melayu
+              </option>
+              <option value="//www.google.com/intl/ca/chrome/browser/">
+                Català
+              </option>
+              <option value="//www.google.com/intl/cs/chrome/browser/">
+                Čeština
+              </option>
+              <option value="//www.google.com/intl/da/chrome/browser/">
+                Dansk
+              </option>
+              <option value="//www.google.com/intl/de/chrome/browser/">
+                Deutsch
+              </option>
+              <option value="//www.google.com/intl/et/chrome/browser/">
+                Eesti
+              </option>
+              <option value="//www.google.com.au/intl/en/chrome/browser/">
+                English – Australia
+              </option>
+              <option value="//www.google.co.in/intl/en/chrome/browser/">
+                English – India
+              </option>
+              <option value="//www.google.co.uk/intl/en/chrome/browser/">
+                English – United Kingdom
+              </option>
+              <option selected value="//www.google.com/intl/en/chrome/browser/">
+                English – United States
+              </option>
+              <option value="//www.google.com/intl/es/chrome/browser/">
+                Español
+              </option>
+              <option value="//www.google.com/intl/es-419/chrome/browser/">
+                Español (Latinoamérica)
+              </option>
+              <option value="//www.google.com/intl/fil/chrome/browser/">
+                Filipino
+              </option>
+              <option value="//www.google.com/intl/fr/chrome/browser/">
+                Français
+              </option>
+              <option value="//www.google.com/intl/hr/chrome/browser/">
+                Hrvatski
+              </option>
+              <option value="//www.google.com/intl/it/chrome/browser/">
+                Italiano
+              </option>
+              <option value="//www.google.com/intl/lv/chrome/browser/">
+                Latviešu
+              </option>
+              <option value="//www.google.com/intl/lt/chrome/browser/">
+                Lietuvių
+              </option>
+              <option value="//www.google.com/intl/hu/chrome/browser/">
+                Magyar
+              </option>
+              <option value="//www.google.com/intl/nl/chrome/browser/">
+                Nederlands
+              </option>
+              <option value="//www.google.com/intl/no/chrome/browser/">
+                Norsk
+              </option>
+              <option value="//www.google.com/intl/pl/chrome/browser/">
+                Polski
+              </option>
+              <option value="//www.google.com/intl/pt-BR/chrome/browser/">
+                Português (Brasil)
+              </option>
+              <option value="//www.google.com/intl/pt-PT/chrome/browser/">
+                Português (Portugal)
+              </option>
+              <option value="//www.google.com/intl/ro/chrome/browser/">
+                Română
+              </option>
+              <option value="//www.google.com/intl/sk/chrome/browser/">
+                Slovenčina
+              </option>
+              <option value="//www.google.com/intl/sl/chrome/browser/">
+                Slovenščina
+              </option>
+              <option value="//www.google.com/intl/fi/chrome/browser/">
+                Suomi
+              </option>
+              <option value="//www.google.com/intl/sv/chrome/browser/">
+                Svenska
+              </option>
+              <option value="//www.google.com/intl/vi/chrome/browser/">
+                Tiếng Việt
+              </option>
+              <option value="//www.google.com/intl/tr/chrome/browser/">
+                Türkçe
+              </option>
+              <option value="//www.google.com/intl/el/chrome/browser/">
+                Ελληνικά
+              </option>
+              <option value="//www.google.com/intl/bg/chrome/browser/">
+                Български
+              </option>
+              <option value="//www.google.com/intl/ru/chrome/browser/">
+                Русский
+              </option>
+              <option value="//www.google.com/intl/sr/chrome/browser/">
+                Српски
+              </option>
+              <option value="//www.google.com/intl/uk/chrome/browser/">
+                Українська
+              </option>
+              <option value="//www.google.com/intl/iw/chrome/browser/">
+                עברית
+              </option>
+              <option value="//www.google.com/intl/ar/chrome/browser/">
+                العربية
+              </option>
+              <option value="//www.google.com/intl/fa/chrome/browser/">
+                فارسی
+              </option>
+              <option value="//www.google.com/intl/hi/chrome/browser/">
+                हिन्दी
+              </option>
+              <option value="//www.google.com/intl/th/chrome/browser/">
+                ไทย
+              </option>
+              <option value="//www.google.com/intl/ko/chrome/browser/">
+                한국어
+              </option>
+              <option value="//www.google.com/intl/zh-CN/chrome/browser/">
+                中文 (中国)
+              </option>
+              <option value="//www.google.com/intl/zh-TW/chrome/browser/">
+                中文 (台灣)
+              </option>
+              <option value="//www.google.com/intl/ja/chrome/browser/">
+                日本語
+              </option>
+            </select>
+          </div>
+          <div id="g-plus-badge">
+            <a data-g-event="nav-subfooter" data-g-label="plus" href=
+            "https://plus.google.com/100585555255542998765?prsrc=3" target="_blank">Add us on
+            <img alt="" data-g-event="nav-subfooter" data-g-label="plus" src=
+            "//ssl.gstatic.com/images/icons/gplus-16.png"></a>
+          </div>
+          <div class="g-plusone" data-annotation="bubble" data-href="http://www.google.com/chrome"
+          data-size="small"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-dialog" id="eula-dialog">
+      <div class="modal-dialog-content">
+        <div class="g-section g-tpl-75-25 g-split">
+          <h2>
+            Get a fast, free web browser
+          </h2><a data-g-event="eula" data-g-label="eula-close" href="javascript:void(0)" id=
+          "eula-close"><span>×</span></a>
+        </div>
+        <div class="linux-content" id="linux-distros">
+          <h3>
+            Please select your download package:
+          </h3><label><input checked="checked" class="linux-distro-options" name=
+          "linux-distro-options" type="radio" value="linux_ubuntu_i386"> 32 bit .deb (For
+          Debian/Ubuntu)</label> <label><input class="linux-distro-options" name=
+          "linux-distro-options" type="radio" value="linux_ubuntu_x86_64"> 64 bit .deb (For
+          Debian/Ubuntu)</label> <label><input class="linux-distro-options" name=
+          "linux-distro-options" type="radio" value="linux_fedora_i386"> 32 bit .rpm (For
+          Fedora/openSUSE)</label> <label><input class="linux-distro-options" name=
+          "linux-distro-options" type="radio" value="linux_fedora_x86_64"> 64 bit .rpm (For
+          Fedora/openSUSE)</label>
+          <p>
+            Not Debian/Ubuntu or Fedora/openSUSE? There may be a community-supported version for
+            your distribution <a href=
+            "http://code.google.com/p/chromium/wiki/LinuxChromiumPackages">here</a>.
+          </p>
+        </div><iframe src="/chrome/intl/en/eula_text.html"></iframe>
+        <p class="eula-pf">
+          <a href="/chrome/intl/en/eula_text.html" target="_blank">Printer-friendly version</a>
+        </p>
+        <div class="linux-content disclaimer">
+          <p>
+            <strong>Note:</strong> Installing Google Chrome will <strong>add the Google
+            repository</strong> so your system will automatically keep Google Chrome up to date. If
+            you don’t want Google's repository, do “sudo touch /etc/default/google-chrome” before
+            installing the package.
+          </p>
+        </div>
+        <div class="win-content" id="win-opts">
+          <p class="default-browser-opt">
+            <label><input checked id="default-cb" type="checkbox" value="set"> Set Google Chrome as
+            my default browser</label>
+          </p>
+          <p>
+            <label><input id="stats-cb" type="checkbox"> Help make Google Chrome better by
+            automatically sending usage statistics and crash reports to Google. <a href=
+            "http://www.google.com/support/chrome/bin/answer.py?answer=96817&amp;hl=en">Learn
+            more</a></label>
+          </p>
+        </div>
+      </div>
+      <div class="modal-dialog-buttons">
+        <button class="button" data-g-event="eula" data-g-label="eula-acceptinstall" id=
+        "eula-accept" name="accept">Accept and Install</button> <span id="throbber"><img alt=""
+        src="//www.google.com/tools/dlpage/res/chrome/images/chrome_throbber_fast_16.gif"></span>
+      </div>
+    </div><script src="/intl/en/chrome/assets/common/js/chrome.min.js">
+</script> <script>
+var chrmMenuBar = new chrm.ui.MenuBar();
+      chrmMenuBar.decorate('nav');
+      var chrmLogo = new chrm.ui.Logo('logo');
+      
+        
+          var chrmnstaller = new chrm.download.Installer(
+            'en',
+            false);
+          var chrmEulaDlg = new chrm.download.EulaDialog(chrmnstaller);
+          chrmEulaDlg.decorate(document.getElementById('eula-dialog'));
+        
+      
+      var chrmscroll = new chrm.ui.SmoothScroll('scroll');
+      chrmscroll.init();
+
+  
+  
+  window.___gcfg = { lang: 'en' };
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+  
+
+  
+    
+      var doubleTracker = new gweb.analytics.DoubleTrack('floodlight', {
+          src: 2542116,
+          type: 'clien612',
+          cat: 'chrom0'
+      });
+      doubleTracker.track();
+    
+      doubleTracker.trackClass('doubletrack', true);
+    </script> <script>
+if (goog.userAgent.MOBILE) {
+      window.location = 'https://www.google.com/intl/en/chrome/browser/mobile';
+    };
+    var hidpi = new chrm.ui.HiDpiImageLoader();
+    var tooltips = new chrm.ui.Tooltips('browser-pin', 'tooltip-content',
+                                        'marquee-image');
+    tooltips.init();
+    </script>
+  </body>
+</html>

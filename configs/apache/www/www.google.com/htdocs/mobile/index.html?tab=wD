@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html class="google" itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+  <head>
+
+    <script>
+(function(H){H.className=H.className.replace(/\bgoogle\b/,'google-js')})(document.documentElement)
+    </script>
+    <meta charset="utf-8">
+    <meta content="initial-scale=1, minimum-scale=1, width=device-width" name="viewport">
+    <title>
+      Google Mobile
+    </title>
+    <script src="//www.google.com/js/google.js">
+</script>
+    <script src="//www.google.com/js/google.js">
+</script>
+    <script>
+var mobileTracker = new gweb.analytics.AutoTrack({
+      profile: 'UA-10008857-1'
+    });
+    </script>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&amp;lang=en" rel=
+    "stylesheet">
+    <link href="/mobile/css/index.css" rel="stylesheet">
+    <script src="//www.gstatic.com/swiffy/v4.2/runtime.js">
+</script>
+    <script src="js/view-mgc.js">
+</script>
+    <script src="/mobile/js/bone.js">
+</script>
+    <style>
+#home-feature #feature-nav > .nav-item {
+      width: 169px;
+    }
+    #footer-nav .maia-col-2 {
+      width: 16%;
+    }
+    </style>
+    <style>
+div.c1 {display:none}
+    </style>
+  </head>
+  <body>
+    <div class="maia-header" id="maia-header">
+      <div class="maia-aux">
+        <div class="maia-head">
+          <h1>
+            <a href="/mobile/"><img alt="Google" src=
+            "//www.google.com/images/logos/google_logo_41.png"> Mobile</a>
+          </h1>
+        </div>
+        <div class="maia-base">
+          <div class="maia-plusone">
+            <script src="//apis.google.com/js/plusone.js">
+{
+      lang: 'en',
+      parsetags: 'explicit'
+    }
+            </script> <span class="plusone-button" id="plusone-httpwwwgooglecommobile"></span>
+            <script>
+(function() {
+    var href = 'http://www.google.com//mobile/' ||
+               window['location']['protocol'] + '//' +
+               window['location']['host'] + window['location']['pathname'];
+
+    gapi['plusone']['render']('plusone-httpwwwgooglecommobile', {
+      'count': 'false',
+      'href': href,
+      'size': 'small',
+      'callback': ''
+    });
+  }());
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="use-transforms" id="home-feature">
+      <div class="drop-shadow-top"></div>
+      <div class="navsection" data-bgimg="search" data-imganim="screen:png" data-time="4:10" id=
+      "home-feature-home">
+        <div class="content dark">
+          <h2>
+            Take Google with you
+          </h2>
+          <p>
+            The Google products you know and love, designed to work best on Android phones and
+            tablets.
+          </p>
+          <div class="content-buttons">
+            <div class="button" data-g-action="Click" data-g-event="Start Now" data-g-label=
+            "Home - Start Now" id="home-feature-start-button">
+              Start Now
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="navsection" data-imganim="screen:png" data-swfanim="search" data-time="4:10" id=
+      "home-feature-search">
+        <div class="content dark">
+          <h2>
+            Search the Web
+          </h2>
+          <p>
+            Find what you need, when you need it. Enjoy a fast simple web browsing experience on
+            the go.
+          </p>
+          <div class="content-buttons">
+            <a class="learn-more-button light" data-g-action="Click" data-g-event=
+            "Hero Product Link" data-g-label="Hero - Search" href="search/"><span class=
+            "icon-search-med sprite">&nbsp;</span> <span><span class="product">Google
+            Search</span><br>
+            Learn More</span></a>
+            <div class="content-divider sprite"></div><a class="learn-more-button light"
+            data-g-action="Click" data-g-event="Hero Product Link" data-g-label="Hero - Chrome"
+            href="chrome/"><span class="icon-chrome-med sprite">&nbsp;</span> <span><span class=
+            "product">Chrome</span><br>
+            Learn More</span></a>
+          </div>
+        </div>
+        <div class="screen-anim c1" id="search-anim">
+          <div id="search-anim-1">
+            <div class='search-term'>
+              <div class="search-term-right">
+                best place to watch golden gate sunset
+              </div>
+            </div>
+            <div class='search-results'>
+              <div class='search-result'>
+                best place to watch golden gate
+              </div>
+              <div class='search-result'>
+                best place to watch golden gate fireworks
+              </div>
+            </div>
+          </div>
+          <div id="search-anim-2">
+            <div class='search-term'>
+              <div class="search-term-right">
+                crissy field
+              </div>
+            </div>
+            <div class='search-results'>
+              <div class='search-result'>
+                crissy field san francisco ca
+              </div>
+              <div class='search-result'>
+                crissy field san francisco
+              </div>
+              <div class='search-result'>
+                crissy field center
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="navsection" data-imganim="screen:png" data-swfanim="maps" data-time="4:10" id=
+      "home-feature-maps">
+        <div class="content dark">
+          <h2>
+            Navigate your World
+          </h2>
+          <p>
+            Never get lost as you go to new places and old favorites.
+          </p>
+          <div class="content-buttons">
+            <a class="learn-more-button light" data-g-action="Click" data-g-event=
+            "Hero Product Link" data-g-label="Hero - Maps" href="maps/"><span class=
+            "icon-maps-med sprite">&nbsp;</span> <span><span class="product">Google Maps for
+            Android</span><br>
+            Learn More</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="navsection" data-imganim="screen:png" data-swfanim="people" data-time="6:30"
+      data-video="people:webm,mp4,ogv" id="home-feature-people">
+        <div class="content">
+          <h2>
+            Connect &amp; Share
+          </h2>
+          <p>
+            Stay connected and share life as it happens.
+          </p>
+          <div class="content-buttons">
+            <a class="learn-more-button light" data-g-action="Click" data-g-event=
+            "Hero Product Link" data-g-label="Hero - gplus" href="+/"><span class=
+            "icon-plus-med sprite">&nbsp;</span> <span><span class="product">Google+</span><br>
+            Learn More</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="navsection" data-imganim="screen:png" data-notopbar="true" data-time="4:10"
+      data-videoanim="apps:webm,mp4,ogv" id="home-feature-apps">
+        <div class="content dark">
+          <h2>
+            Be Entertained
+          </h2>
+          <p>
+            Enjoy all your favorite entertainment<br>
+            and apps, wherever you are.
+          </p>
+          <div class="content-buttons">
+            <a class="learn-more-button dark" data-g-action="Click" data-g-event=
+            "Hero Product Link" data-g-label="Hero - Google Play" href="play/"><span class=
+            "icon-play-med sprite">&nbsp;</span> <span><span class="product">Google Play</span><br>
+            Learn More</span></a>
+            <div class="content-divider sprite"></div><a class="learn-more-button dark"
+            data-g-action="Click" data-g-event="Hero Product Link" data-g-label="Hero - YouTube"
+            href="youtube/"><span class="icon-youtube-med sprite">&nbsp;</span> <span><span class=
+            "product">YouTube</span><br>
+            Learn More</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="navsection" data-imganim="screen:png" data-swfanim="email" data-time="4:10" id=
+      "home-feature-email">
+        <div class="content">
+          <h2>
+            Create &amp; Collaborate
+          </h2>
+          <p>
+            Create, share, collaborate and keep your stuff - all in one place. Get smarter email.
+          </p>
+          <div class="content-buttons">
+            <a class="learn-more-button light" data-g-action="Click" data-g-event=
+            "Hero Product Link" data-g-label="Hero - Drive" href="drive/"><span class=
+            "icon-drive-med sprite">&nbsp;</span> <span><span class="product">Google
+            Drive</span><br>
+            Learn More</span></a>
+            <div class="content-divider sprite"></div><a class="learn-more-button light"
+            data-g-action="Click" data-g-event="Hero Product Link" data-g-label="Hero - Gmail"
+            href="gmail/"><span class="icon-gmail-med sprite">&nbsp;</span> <span><span class=
+            "product">Gmail</span><br>
+            Learn More</span></a>
+          </div>
+        </div>
+        <div class="screen-anim c1" id="email-anim">
+          <div id="email-anim-container">
+            <div id="email-anim-caret-1">
+              <div class="email-anim-caret anim-sprite email-anim-caret-1"></div>
+            </div>
+            <div id="email-anim-caret-2">
+              <div class="email-anim-caret anim-sprite email-anim-caret-2"></div>
+              <div class="email-anim-name">
+                Kate
+              </div>
+            </div>
+            <div id="email-anim-caret-3">
+              <div class="email-anim-caret anim-sprite email-anim-caret-3"></div>
+              <div class="email-anim-name">
+                James
+              </div>
+            </div>
+            <div class="email-anim-line" data-user="2">
+              What we need for the party tonight:
+            </div>
+            <ul>
+              <li class="email-anim-line" data-user="1">Decorations
+              </li>
+              <li class="email-anim-line" data-user="3">Snacks
+              </li>
+              <li class="email-anim-line" data-user="2">Drinks
+              </li>
+              <li class="email-anim-line" data-user="1">Desserts
+              </li>
+              <li class="email-anim-line" data-user="3">Epic playlist
+              </li>
+            </ul>
+          </div>
+          <header>
+            Kate and 1 other are viewing
+          </header>
+        </div>
+      </div>
+      <div class="navsection" data-swfanim="shop" data-time="4:10" id="home-feature-shop">
+        <div class="content dark">
+          <h2>
+            Shop &amp; Buy
+          </h2>
+          <p>
+            Make your phone your wallet, and get great offers near you.
+          </p>
+          <div class="content-buttons">
+            <a class="learn-more-button light" data-g-action="Click" data-g-event=
+            "Hero Product Link" data-g-label="Hero - Wallet" href="wallet/"><span class=
+            "icon-wallet-med sprite">&nbsp;</span> <span><span class="product">Google
+            Wallet</span><br>
+            Learn More</span></a>
+            <div class="content-divider sprite"></div><a class="learn-more-button light"
+            data-g-action="Click" data-g-event="Hero Product Link" data-g-label="Hero - Offers"
+            href="offers/"><span class="icon-offers-med sprite">&nbsp;</span> <span><span class=
+            "product">Google Offers</span><br>
+            Learn More</span></a>
+          </div>
+        </div>
+      </div>
+      <div id="home-feature-footer">
+        <div class="drop-shadow-bot"></div>
+        <div class="nav-bar">
+          <div id="feature-nav">
+            <div class="nav-item" data-g-action="Click" data-g-event="Bucket Link" data-g-label=
+            "Bucket - Search the Web" data-section="search">
+              <div class="on-state"></div>
+              <div class="icon center-block">
+                <div class="icon-search sprite center-content"></div>
+              </div><span class="label">Search the Web</span>
+            </div>
+            <div class="nav-divider sprite"></div>
+            <div class="nav-item just-el" data-g-action="Click" data-g-event="Bucket Link"
+            data-g-label="Bucket - Navigate your World" data-section="maps">
+              <div class="on-state"></div>
+              <div class="icon center-block">
+                <div class="icon-maps sprite center-content"></div>
+              </div><span class="label">Navigate your World</span>
+            </div>
+            <div class="nav-divider sprite"></div>
+            <div class="nav-item" data-g-action="Click" data-g-event="Bucket Link" data-g-label=
+            "Bucket - Connect and Share" data-section="people">
+              <div class="on-state"></div>
+              <div class="icon center-block">
+                <div class="icon-people sprite center-content"></div>
+              </div><span class="label">Connect &amp; Share</span>
+            </div>
+            <div class="nav-divider sprite"></div>
+            <div class="nav-item" data-g-action="Click" data-g-event="Bucket Link" data-g-label=
+            "Bucket - Be Entertained" data-section="apps">
+              <div class="on-state"></div>
+              <div class="icon center-block">
+                <div class="icon-apps sprite center-content"></div>
+              </div><span class="label">Be Entertained</span>
+            </div>
+            <div class="nav-divider sprite"></div>
+            <div class="nav-item" data-g-action="Click" data-g-event="Bucket Link" data-g-label=
+            "Bucket - Create and Collaborate" data-section="email">
+              <div class="on-state"></div>
+              <div class="icon center-block">
+                <div class="icon-email sprite center-content"></div>
+              </div><span class="label">Create &amp; Collaborate</span>
+            </div>
+            <div class="nav-divider sprite"></div>
+            <div class="nav-item" data-g-action="Click" data-g-event="Bucket Link" data-g-label=
+            "Bucket - Shop and Buy" data-section="shop">
+              <div class="on-state"></div>
+              <div class="icon center-block">
+                <div class="icon-shop sprite center-content"></div>
+              </div><span class="label">Shop &amp; Buy</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="maia-main">
+      <div id="appsblock">
+        <h2 class="platformh2">
+          Featured Apps
+        </h2>
+        <ul class="applist">
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.googlequicksearchbox">
+            <img alt="" src="android/images/an_search.png">
+            <h3>
+              Google Search
+            </h3>
+            <p>
+              Quickly &amp; easily find what you need on the web &amp; your phone or tablet.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href="https://play.google.com/store/apps/details?id=com.android.chrome"><img alt=""
+            src="android/images/an_chrome.png">
+            <h3>
+              Chrome for Android
+            </h3>
+            <p>
+              Browse fast &amp; bring your personalized Chrome with you.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.maps"><img alt=
+            "" src="android/images/an_maps.png">
+            <h3>
+              Google Maps for Android
+            </h3>
+            <p>
+              Never get lost as you go to new places &amp; old favorites.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.plus"><img alt=
+            "" src="android/images/an_g+.png">
+            <h3>
+              Google+
+            </h3>
+            <p>
+              Stay connected and share life as it happens.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.books"><img alt=
+            "" src="android/images/an_books.png">
+            <h3>
+              Google Play Books
+            </h3>
+            <p>
+              Read the books you love, everywhere you are.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.magazines"><img alt=""
+            src="android/images/an_playmagazine.png">
+            <h3>
+              Google Play Magazines
+            </h3>
+            <p>
+              Read your favorite magazines, everywhere you are.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.music"><img alt=""
+            src="android/images/an_music.png">
+            <h3>
+              Google Play Music
+            </h3>
+            <p>
+              Play your music instantly, anywhere.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.videos"><img alt=""
+            src="android/images/an_video.png">
+            <h3>
+              Google Play Movies &amp; TV
+            </h3>
+            <p>
+              Watch movies &amp; TV shows instantly, anywhere.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.youtube"><img alt=""
+            src="android/images/an_youtube.png">
+            <h3>
+              YouTube
+            </h3>
+            <p>
+              Millions of videos at your fingertips, available on the go.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.docs"><img alt=
+            "" src="android/images/an_drive.png">
+            <h3>
+              Google Drive
+            </h3>
+            <p>
+              One place to create, share, collaborate &amp; keep your stuff, available on all your
+              devices.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href="https://play.google.com/store/apps/details?id=com.google.android.gm"><img alt=
+            "" src="android/images/an_gmail.png">
+            <h3>
+              Gmail
+            </h3>
+            <p>
+              Get smarter email wherever you are.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.walletnfcrel"><img alt=""
+            src="android/images/an_wallet.png">
+            <h3>
+              Google Wallet
+            </h3>
+            <p>
+              Make your phone your wallet.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.offers"><img alt=""
+            src="android/images/an_offers.png">
+            <h3>
+              Google Offers
+            </h3>
+            <p>
+              Discover, buy and redeem great deals with your Android device.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+        </ul>
+        <h2 class="platformh2">
+          Other Apps
+        </h2>
+        <ul class="applist">
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.voicesearch"><img alt=""
+            src="android/images/an_voice.png">
+            <h3>
+              Voice Search
+            </h3>
+            <p>
+              Use your voice to do what you need on your phone or tablet.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.translate"><img alt=""
+            src="android/images/an_translate.png">
+            <h3>
+              Google Translate
+            </h3>
+            <p>
+              Break through language barriers with easy input and quick, seamless translation.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href="https://play.google.com/store/apps/details?id=com.google.earth"><img alt=""
+            src="android/images/an_earth.png">
+            <h3>
+              Google Earth
+            </h3>
+            <p>
+              Explore the world like never before from the palm of your hand.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.unveil"><img alt=""
+            src="android/images/an_goggle.png">
+            <h3>
+              Google Goggles
+            </h3>
+            <p>
+              Search the real world by taking a picture.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.currents"><img alt=""
+            src="android/images/an_currents.png">
+            <h3>
+              Google Currents
+            </h3>
+            <p>
+              Read &amp; share your favorite content in a swipable magazine format tuned for your
+              Android device.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.googlevoice"><img alt=""
+            src="android/images/an_googlevoice.png">
+            <h3>
+              Google Voice
+            </h3>
+            <p>
+              Make cheap international calls, send free text messages &amp; get visual voicemail.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.shopper"><img alt=""
+            src="android/images/an_shopper.png">
+            <h3>
+              Google Shopper
+            </h3>
+            <p>
+              Research products and find great deals when you're on-the-go.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.schemer"><img alt=""
+            src="android/images/an_schemer.png">
+            <h3>
+              Schemer
+            </h3>
+            <p>
+              The beginning of everything worth doing.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.maps.mytracks"><img alt=""
+            src="android/images/an_mytracks.png">
+            <h3>
+              My Tracks
+            </h3>
+            <p>
+              Record your GPS tracks, aggregate your stats over time and share your paths with
+              friends.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.reader"><img alt=""
+            src="android/images/an_reader.png">
+            <h3>
+              Google Reader
+            </h3>
+            <p>
+              Follow all your favorite sites, blogs, and more, all in one place.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.finance"><img alt=""
+            src="android/images/an_finance.png">
+            <h3>
+              Google Finance
+            </h3>
+            <p>
+              Get real-time stock quotes, sync your portfolio &amp; get the latest financial news.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.blogger"><img alt=""
+            src="android/images/an_blogger.png">
+            <h3>
+              Blogger
+            </h3>
+            <p>
+              Blogging on the go made easy with the Blogger app.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+          <li>
+            <a href=
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.orkut"><img alt=
+            "" src="android/images/an_orkut.png">
+            <h3>
+              Orkut
+            </h3>
+            <p>
+              Orkut for Android.
+            </p>
+            <p class="downloadlink">
+              Download App
+            </p></a>
+          </li>
+        </ul>
+      </div>
+      <div class="maia-cols" id="billboard">
+        <div class="maia-col-4" id="promo1">
+          <a href="http://www.google.com/nexus">
+          <h3>
+            Explore Nexus from Google
+          </h3>
+          <p>
+            Nexus devices are the fastest and easiest way to connect to the best of Google.
+          </p></a>
+        </div>
+        <div class="maia-col-4" id="promo2">
+          <a href="http://www.android.com/">
+          <h3>
+            Discover Android
+          </h3>
+          <p>
+            Find out more about the world's most popular mobile platform.
+          </p></a>
+        </div>
+        <div class="maia-col-4" id="promo3">
+          <a href="http://www.android.com/+">
+          <h3>
+            Join the Android community
+          </h3>
+          <p>
+            A place for Android fans everywhere to meet, share and get the latest on all things
+            Android.
+          </p></a>
+        </div>
+      </div>
+    </div>
+    <div id="maia-signature"></div>
+    <div class="maia-footer" id="maia-footer">
+      <div id="maia-footer-local">
+        <div class="maia-aux">
+          <div class="maia-cols" id="footer-nav">
+            <div class="maia-col-2">
+              <h4>
+                Search the Web
+              </h4>
+              <ul>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Search" href="/mobile/search/">Google Search</a>
+                </li>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Chrome" href="/mobile/chrome/">Chrome</a>
+                </li>
+              </ul>
+            </div>
+            <div class="maia-col-2">
+              <h4>
+                Navigate your World
+              </h4>
+              <ul>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Maps" href="/mobile/maps/">Google Maps for Android</a>
+                </li>
+              </ul>
+            </div>
+            <div class="maia-col-2">
+              <h4>
+                Connect &amp; Share
+              </h4>
+              <ul>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Google+" href="/mobile/+/">Google+</a>
+                </li>
+              </ul>
+            </div>
+            <div class="maia-col-2">
+              <h4>
+                Be Entertained
+              </h4>
+              <ul>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Google Play" href="/mobile/play/">Google Play</a>
+                </li>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - YouTube" href="/mobile/youtube/">YouTube</a>
+                </li>
+              </ul>
+            </div>
+            <div class="maia-col-2">
+              <h4>
+                Create &amp; Collaborate
+              </h4>
+              <ul>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Drive" href="/mobile/drive/">Google Drive</a>
+                </li>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Gmail" href="/mobile/gmail/">Gmail</a>
+                </li>
+              </ul>
+            </div>
+            <div class="maia-col-2">
+              <h4>
+                Shop &amp; Buy
+              </h4>
+              <ul>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Wallet" href="/mobile/wallet/">Google Wallet</a>
+                </li>
+                <li>
+                  <a data-g-action="Footer nav click" data-g-event="Footer-products" data-g-label=
+                  "Footer - Offers" href="/mobile/offers/">Google Offers</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div id="footer-platform">
+            <p id="platform-copy">
+              Google apps by mobile platform
+            </p>
+            <ul>
+              <li id="f-android">
+                <a data-g-action="Footer platform click" data-g-event="Footer-platform"
+                data-g-label="Footer - android" href="/mobile/android/">Android<br></a>
+              </li>
+              <li id="f-ios">
+                <a data-g-action="Footer platform click" data-g-event="Footer-platform"
+                data-g-label="Footer - ios" href="/mobile/ios/">iOS</a>
+              </li>
+            </ul>
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+      <div id="maia-footer-global">
+        <div class="maia-aux">
+          <div class="maia-locales">
+            <select onchange=
+            "var href=this[this.selectedIndex].value;if(href!=''){window.location.href=href};">
+              <option value="//www.google.com/intl/id/mobile/">
+                Bahasa Indonesia
+              </option>
+              <option value="//www.google.com/intl/da/mobile/">
+                Dansk
+              </option>
+              <option value="//www.google.com/intl/de/mobile/">
+                Deutsch
+              </option>
+              <option value="//www.google.ch/intl/de/mobile/">
+                Deutsch – Schweiz
+              </option>
+              <option value="//www.google.at/intl/de/mobile/">
+                Deutsch – Österreich
+              </option>
+              <option selected value="//www.google.com/intl/en/mobile/">
+                English
+              </option>
+              <option value="//www.google.com.au/intl/en/mobile/">
+                English – Australia
+              </option>
+              <option value="//www.google.ca/intl/en/mobile/">
+                English – Canada
+              </option>
+              <option value="//www.google.com.gh/intl/en/mobile/">
+                English – Ghana
+              </option>
+              <option value="//www.google.co.in/intl/en/mobile/">
+                English – India
+              </option>
+              <option value="//www.google.co.id/intl/en/mobile/">
+                English – Indonesia
+              </option>
+              <option value="//www.google.ie/intl/en/mobile/">
+                English – Ireland
+              </option>
+              <option value="//www.google.co.ke/intl/en/mobile/">
+                English – Kenya
+              </option>
+              <option value="//www.google.com.my/intl/en/mobile/">
+                English – Malaysia
+              </option>
+              <option value="//www.google.co.nz/intl/en/mobile/">
+                English – New Zealand
+              </option>
+              <option value="//www.google.com.ng/intl/en/mobile/">
+                English – Nigeria
+              </option>
+              <option value="//www.google.com.sg/intl/en/mobile/">
+                English – Singapore
+              </option>
+              <option value="//www.google.co.za/intl/en/mobile/">
+                English – South Africa
+              </option>
+              <option value="//www.google.co.ug/intl/en/mobile/">
+                English – Uganda
+              </option>
+              <option value="//www.google.co.uk/intl/en/mobile/">
+                English – United Kingdom
+              </option>
+              <option value="//www.google.com/intl/es/mobile/">
+                Español
+              </option>
+              <option value="//www.google.com.ar/intl/es-419/mobile/">
+                Español (Latinoamérica) – Argentina
+              </option>
+              <option value="//www.google.com.ph/intl/tl/mobile/">
+                Filipino – Pilipinas
+              </option>
+              <option value="//www.google.com/intl/fr/mobile/">
+                Français
+              </option>
+              <option value="//www.google.be/intl/fr/mobile/">
+                Français – Belgique
+              </option>
+              <option value="//www.google.sn/intl/fr/mobile/">
+                Français – Sénégal
+              </option>
+              <option value="//www.google.com/intl/it/mobile/">
+                Italiano
+              </option>
+              <option value="//www.google.com/intl/hu/mobile/">
+                Magyar
+              </option>
+              <option value="//www.google.com/intl/nl/mobile/">
+                Nederlands
+              </option>
+              <option value="//www.google.be/intl/nl/mobile/">
+                Nederlands – België
+              </option>
+              <option value="//www.google.com/intl/no/mobile/">
+                Norsk
+              </option>
+              <option value="//www.google.com/intl/pl/mobile/">
+                Polski
+              </option>
+              <option value="//www.google.com/intl/pt-BR/mobile/">
+                Português (Brasil)
+              </option>
+              <option value="//www.google.com/intl/pt-PT/mobile/">
+                Português (Portugal)
+              </option>
+              <option value="//www.google.co.ao/intl/pt-PT/mobile/">
+                Português (Portugal) – Angola
+              </option>
+              <option value="//www.google.com/intl/fi/mobile/">
+                Suomi
+              </option>
+              <option value="//www.google.com/intl/sv/mobile/">
+                Svenska
+              </option>
+              <option value="//www.google.com.vn/intl/vi/mobile/">
+                Tiếng Việt – Việt Nam
+              </option>
+              <option value="//www.google.com/intl/tr/mobile/">
+                Türkçe
+              </option>
+              <option value="//www.google.com/intl/cs/mobile/">
+                Čeština
+              </option>
+              <option value="//www.google.com/intl/ru/mobile/">
+                Русский
+              </option>
+              <option value="//www.google.co.in/intl/hi/mobile/">
+                हिन्दी – भारत
+              </option>
+              <option value="//www.google.com/intl/th/mobile/">
+                ไทย
+              </option>
+              <option value="//www.google.com/intl/zh-CN/mobile/">
+                中文 (中国)
+              </option>
+              <option value="//www.google.com/intl/zh-TW/mobile/">
+                中文 (台灣)
+              </option>
+              <option value="//www.google.com/intl/ja/mobile/">
+                日本語
+              </option>
+              <option value="//www.google.co.kr/intl/ko/mobile/">
+                한국어 – 대한민국
+              </option>
+            </select>
+          </div>
+          <ul>
+            <li>
+              <a href="/">Google</a>
+            </li>
+            <li>
+              <a href="/intl/en/policies/">Privacy &amp; Terms</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div><script>
+mgc.feature.init();
+    </script>  <script>
+var axel = Math.random() + "";
+    var a = axel * 10000000000000;
+    document.write('<iframe src="https://fls.doubleclick.net/activityi;src=2542116;type=mobil635;cat=mobile01;ord=' + a + '?" width="1" height="1" frameborder="0" style="display:none"></iframe>');
+    </script> <noscript><iframe class="c2" frameborder="0" height="1" src=
+    "https://fls.doubleclick.net/activityi;src=2542116;type=mobil635;cat=mobile01;ord=1?" width=
+    "1"></iframe></noscript>
+  </body>
+</html>

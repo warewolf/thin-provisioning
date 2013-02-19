@@ -1,0 +1,5 @@
+<VirtualHost *:*>
+    DocumentRoot /var/www/www.example.com/htdocs
+    ServerName www.example.com
+</VirtualHost>
+
