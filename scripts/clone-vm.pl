@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# vim: foldmethod=marker sw=2 commentstring=\ #\ %s
+# vim: foldmethod=marker sw=2 commentstring=\ #\ %s 
 
 use strict;
 use warnings;
@@ -11,6 +11,8 @@ use Sys::Guestfs;
 use Win::Hivex;
 use File::Temp qw( tempfile tempdir);
 use Encode qw(from_to);
+use List::Util qw(first);
+use Fcntl qw(:seek);
 
 # XXX RGH XXX: You may wonder what all this drivel is here in the options to LibXML:
 # XXX RGH XXX: It's to prevent bad XML fed into LibXML from executing arbitrary code through XML includes, etc.
@@ -31,8 +33,14 @@ my $parser = XML::LibXML->new( # {{{
 ); # }}}
 
 # options defaults # {{{
-my $opts = { cowpool => "ram","rename"=>1, };
-GetOptions($opts,"domain=s","clone=s",'cowpool=s',"help|?","man","rename!") or pod2usage();
+my $opts = {
+  cowpool => "ram",
+  "rename"=>1,
+  "svcisolate"=>1,
+  "cleanup" => 1,
+};
+# }}}
+GetOptions($opts,"domain=s","clone=s",'cowpool=s',"help|?","man","rename!","svcisolate!","mac=s",'cleanup!') or pod2usage();
 pod2usage(1) if ($opts->{help});
 pod2usage(-verbose=>2) if ($opts->{man});
 pod2usage (-verbose=>1,-msg=>"Error: domain and clone are required") unless length $opts->{domain} && length $opts->{clone}; # }}}
@@ -88,8 +96,15 @@ my ($uuid) = $domain_doc->findnodes('/domain/uuid');
 $uuid->unbindNode();
 
 # remove MAC node to have libvirt autogen it
-my ($mac) = $domain_doc->findnodes('/domain/devices/interface[./@type="network"  or ./@type="bridge"]/mac');
-$mac->unbindNode();
+if (! $opts->{mac}) {
+  my ($mac) = $domain_doc->findnodes('/domain/devices/interface[./@type="network"  or ./@type="bridge"]/mac');
+  $mac->unbindNode();
+} else {
+  my ($old_mac) = $domain_doc->findnodes('/domain/devices/interface[./@type="network"  or ./@type="bridge"]/mac/@address');
+
+  my $new_mac = $domain_doc->createAttribute("address",$opts->{mac});
+  $old_mac->replaceNode($new_mac);
+}
 
 # define the domain # {{{
 my $new_domain;
@@ -125,44 +140,134 @@ if ($opts->{rename}) {
   $guest->mount($root,"/");
 
   my $systemroot = $guest->inspect_get_windows_systemroot($root);
+  print "systemroot is $systemroot\n";
+
+  my $distro = $guest->inspect_get_distro ($root);
+  my $variant = $guest->inspect_get_product_variant ($root);
+  my $name = $guest->inspect_get_type ($root);
+  my $major = $guest->inspect_get_major_version ($root);
+  my $minor = $guest->inspect_get_minor_version ($root);
+
+  printf("distro = %s, variant = %s, name = %s, major = %d, minor = %d\n",$distro,$variant,$name,$major,$minor);
+
   # create a temporary area to download registry hives
-  my $tempdir = File::Temp->newdir( "clone-vm-XXXXX", CLEANUP => 1 );
-  my $path = $guest->case_sensitive_path(sprintf("%s/system32/config/system",$systemroot));
+  my $tempdir = File::Temp->newdir( "clone-vm-XXXXX", CLEANUP => $opts->{cleanup}, DIR=> "/tmp" );
+  my $system_hive_path = $guest->case_sensitive_path(sprintf("%s/system32/config/system",$systemroot));
+  my $software_hive_path = $guest->case_sensitive_path(sprintf("%s/system32/config/software",$systemroot));
 
-  # generate temporary filename for downloaded hive
+  # generate temporary filename for downloaded system hive
   my $temp_system_hive_fh = File::Temp->new("system-hive-XXXXX", DIR=>$tempdir, SUFFIX=>".tmp", UNLINK => 0, CLEANUP => 0);
-  $guest->download($path,$temp_system_hive_fh->filename);
+  $guest->download($system_hive_path,$temp_system_hive_fh->filename);
+  my $system_hive = Win::Hivex->open($temp_system_hive_fh->filename, write => 1);
 
-  my $hive = Win::Hivex->open($temp_system_hive_fh->filename, write => 1);
+  my $temp_software_hive_fh = File::Temp->new("software-hive-XXXXX", DIR=>$tempdir, SUFFIX=>".tmp", UNLINK => 0, CLEANUP => 0);
+  $guest->download($software_hive_path,$temp_software_hive_fh->filename);
+  my $software_hive = Win::Hivex->open($temp_software_hive_fh->filename, write => 1);
 
-  my @places = (
+
+  # system hive
+  my @system_changes;
+  if ($variant eq "Client"  && $name eq "windows" && $major == 6  && $minor == 1) {
+    push @system_changes,(
+     { path => 'ControlSet001\\Services\\NlaSvc\\Parameters\\Internet', key => 'EnableActiveProbing', t => 4, value => pack("V",0x10) },
+     { path => 'ControlSet002\\Services\\NlaSvc\\Parameters\\Internet', key => 'EnableActiveProbing', t => 4, value => pack("V",0x10) },
+   );
+  }
+
+  foreach my $change (@system_changes) { # {{{
+    my $key = $system_hive->root();
+
+    # iterate down the root
+    map { $key = $system_hive->node_get_child($key,$_) } split(m/\\/,$change->{path});
+
+    $system_hive->node_set_value($key,{ key => $change->{key}, t => $change->{t}, value=> $change->{value}  } );
+  } # }}}
+
+  # change hostname
+  my $rando_hostname;
+  $rando_hostname.= chr(int(rand(26)+65)) for (0..int(rand(10))+1);
+  my @system_places = ( # {{{
     { key => "ControlSet001\\Control\\ComputerName\\ComputerName", value => "ComputerName", format=>"utf16le",},
     { key => "ControlSet001\\Services\\Eventlog", value => "ComputerName", format=>"utf16le" },
     { key => "ControlSet001\\Services\\Tcpip\\Parameters", value => "Hostname",format=>"utf16le" },
     { key => "ControlSet001\\Services\\Tcpip\\Parameters", value => "NV Hostname",format=>"utf16le" },
-  );
+    ##
+    { key => "ControlSet002\\Control\\ComputerName\\ComputerName", value => "ComputerName", format=>"utf16le",},
+    { key => "ControlSet002\\Services\\Eventlog", value => "ComputerName", format=>"utf16le" },
+    { key => "ControlSet002\\Services\\Tcpip\\Parameters", value => "Hostname",format=>"utf16le" },
+    { key => "ControlSet002\\Services\\Tcpip\\Parameters", value => "NV Hostname",format=>"utf16le" },
+  ); # }}}
 
-  foreach my $location (@places) {
-    my $key = $hive->root();
+  foreach my $location (@system_places) { # {{{
+    my $key = $system_hive->root();
 
     my $registry_path = $location->{key};
     my $registry_path_value = $location->{value};
 
     # iterate down the root
-    map { $key = $hive->node_get_child($key,$_) } split(m/\\/,$registry_path);
+    map { $key = $system_hive->node_get_child($key,$_) } split(m/\\/,$registry_path);
+
 
     my $new_hostname_ref = 
       { key => $registry_path_value,
 	t => 1,
-	value => utf16le($opts->{clone}."\x00"),
+	value => utf16le($rando_hostname."\x00"),
       };
 
-    $hive->node_set_value($key,$new_hostname_ref);
+    $system_hive->node_set_value($key,$new_hostname_ref);
 
-    # save changes
-    $hive->commit($temp_system_hive_fh->filename);
+  } # }}}
+
+  # xp
+  # distro = windows, variant = unknown, name = windows, major = 5, minor = 1
+
+  if ($opts->{svcisolate} && $variant eq "Client"  && $name eq "windows" && $major == 6  && $minor == 1 ) { # {{{
+    
+    foreach my $control_set (qw(ControlSet001 ControlSet002)) {
+      my $key = $system_hive->root();
+      $key = $system_hive->node_get_child($key,$control_set);
+      $key = $system_hive->node_get_child($key,"Services");
+      SERVICE: foreach my $service ($system_hive->node_children($key)) {
+        # these services dislike being type= own.
+        next SERVICE if scalar first { lc($system_hive->node_name($service)) eq lc($_) } qw( RpcSs RpcEptMapper PerfNet SamSs);
+        VALUE: foreach my $value ($system_hive->node_values ($service)) {
+          next VALUE unless $system_hive->value_key($value) =~ m/^type$/i;
+          my ($type,$data) = $system_hive->value_value($value);
+          next unless $type == 4;
+          my $legit_value = $system_hive->value_dword($value);
+          next SERVICE unless $legit_value == 0x20;
+        }
+        $system_hive->node_set_value( $service, {
+                key => "Type",
+                t     => 4,
+                value => pack("V",0x10)
+            }
+        );
+      }
+    } 
+  } # }}}
+
+  # sinkhole stuff via "/etc/hosts"
+  my $temp_hosts_file_fh = File::Temp->new("hosts-XXXXX", DIR=>$tempdir, SUFFIX=>".tmp", UNLINK => 0, CLEANUP => 0);
+  my $hosts_file_path = $guest->case_sensitive_path(sprintf("%s/system32/drivers/etc/hosts",$systemroot));
+  print "hosts file path = $hosts_file_path";
+  $guest->download($hosts_file_path,$temp_hosts_file_fh->filename);
+
+  my @sinkhole = ($rando_hostname, qw( www.msftncsi.com wpad.malware.xabean.net armmf.adobe.com));
+  seek ($temp_hosts_file_fh,1,SEEK_END);
+  print $temp_hosts_file_fh "\n";
+  foreach my $sinkhole (@sinkhole) {
+    printf $temp_hosts_file_fh "127.0.0.1 %s\r\n",$sinkhole;
   }
-  $guest->upload($temp_system_hive_fh->filename,$path);
+  $temp_hosts_file_fh->close();
+  $guest->upload($temp_hosts_file_fh->filename,$hosts_file_path);
+
+  # commit changes to system hive
+  $system_hive->commit($temp_system_hive_fh->filename);
+  $software_hive->commit($temp_software_hive_fh->filename);
+  $guest->upload($temp_system_hive_fh->filename,$system_hive_path);
+  $guest->upload($temp_software_hive_fh->filename,$software_hive_path);
+
   $guest->umount_all ()
 }
 
@@ -182,12 +287,15 @@ sub create_cow_vol { # {{{
 
   # get the source disk node path
   # RGH FIXME: disk selection XPath only selects virtio disks
-  my ($source_disk) = $args->{domain_doc}->findvalue('/domain/devices/disk[@device="disk" and contains(target/@dev,"da")]/source/@dev'
+  my ($source_disk) = $args->{domain_doc}->findvalue(
+  '/domain/devices/disk[@device="disk" and contains(target/@dev,"da")]/source/@dev'
   .
   '|'
   .
   '/domain/devices/disk[@device="disk" and contains(target/@dev,"da")]/source/@file');
 
+  my ($source_disk_type) = $args->{domain_doc}->findvalue(
+  '/domain/devices/disk[@device="disk" and contains(target/@dev,"da")]/driver/@type');
   # convert that path into a volume object # {{{
   my $backing_vol;
   eval {
@@ -212,13 +320,13 @@ q|<volume>
   </target>
   <backingStore>
     <path>%s</path>
-    <format type='raw'/>
+    <format type='%s'/>
   </backingStore>
 </volume>|,
   $args->{name}.".qcow2",
   $info->{capacity},
   $group,
-  $source_disk); # }}}
+  $source_disk,$source_disk_type); # }}}
   return $args->{cow_pool}->create_volume($cow_xml);
 } # }}}
 
@@ -245,7 +353,7 @@ sub update_disk_image { # {{{
   my $new_type;
 
   # figure out what type the COW volume is
-  if ($vol_info->{type} == $Sys::Virt::StorageVol::TYPE_FILE) { $new_type="file"; }
+  if ($vol_info->{type} == 0 ) { $new_type="file"; }
   elsif ($vol_info->{type} == $Sys::Virt::StorageVol::TYPE_BLOCK) { $new_type="block"; }
   elsif ($vol_info->{type} == $Sys::Virt::StorageVol::TYPE_DIR) { $new_type="dir"; }
   else { die "Unknown Sys::Virt::StorageVol type $vol_info->{type}" }
